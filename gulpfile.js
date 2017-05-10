@@ -17,7 +17,7 @@ const browserSync = require('browser-sync').create();
 
 
 gulp.task('clean', function() {
-    return gulp.src('dist/**/*.*', { read: false })
+    return gulp.src(['dist/**/*.*', 'docs/**/*.*'], { read: false })
     .pipe(clean({force: true}));
 });
 
@@ -84,17 +84,44 @@ gulp.task('sass', function() {
 
   return gulp
     .src('src/*.scss', { base: './src'})
-    .pipe(changed('dist', {extension: '.css'}))
+    //.pipe(changed('dist', {extension: '.css'}))
     .pipe(sourcemaps.init())
     .pipe(sass(sassOptions).on('error', sass.logError))
     .pipe(sourcemaps.write())
     .pipe(autoprefixer(autoprefixerOptions))
-    .pipe(debug({ title: 'sass:', showFiles: false }))
+    .pipe(debug({ title: 'sass:', showFiles: true }))
     .pipe(gulp.dest('dist'))
-    .pipe(sassdoc())
+    //.pipe(sassdoc())
     .pipe(browserSync.stream())
     // Release the pressure back and trigger flowing mode (drain)
     // See: http://sassdoc.com/gulp/#drain-event
+    .resume();
+});
+
+gulp.task('sassdoc', function () {
+  var sassdocOptions = {
+    dest: 'docs',
+    verbose: true,
+    display: {
+      access: ['public', 'private'],
+      alias: true,
+      watermark: true,
+    },
+    groups: {
+      'undefined': 'Ungrouped',
+      component: 'Angular Component',
+      configuration: 'Configuration',
+      pastac: 'PastaC Stack',
+      authservice: 'Authservice.io',
+      crowdhound: 'Crowdhound.io',
+      teaservice: 'TEAservice.io',
+    },
+    basePath: 'https://github.com/tooltwist/pastac-example-component/tree/master/src',
+  };
+
+  return gulp
+    .src('src/*.scss')
+    .pipe(sassdoc(sassdocOptions))
     .resume();
 });
 
@@ -148,7 +175,7 @@ gulp.task('serve', function() {
     .watch(['src/**/*.*', 'test/**/*.*'], ['testpage', 'pug', 'sass', 'js', 'minjs'])
 });
 
-gulp.task('install', ['pug', 'sass', 'js', 'minjs']);
+gulp.task('install', ['pug', 'sass', 'js', 'minjs', 'sassdoc']);
 
 gulp.task('other-tasks-message', function(done) {
   console.log();

@@ -1,5 +1,50 @@
-.example-component {
+////
+/// @author Philip Callender
+/// @group component
+///
+
+
+/// Example variable for color red
+/// @access public
+/// @type Color
+$red:	#ff0000;
+
+/// Example variable for color green
+/// @access public
+/// @type Color
+$green:	#00ff00;
+
+/// Example variable for color blue
+/// @access public
+/// @type Color
+$blue:	#0000ff;
+
+/// Example component
+/// @access public
+pastac-example-component {
+
+  /// Apply this to elements within the component that need emphasis
   .red {
-    color: red;
+    color: $red;
   }
+}
+
+/// Example mixin to size elements in a single line.
+/// This mixin is essentially a short hand to define
+/// both `width` and `height` simultaneously.
+///
+/// @author Philip Callender
+///
+/// @param {Length} $width - Element's width
+/// @param {Length} $height [$width] - Element's height
+/// @output `width` and `height`
+///
+/// @example scss - Sizing `.foo`
+///   .foo {
+///     @include size(100%, 3em);
+///   }
+
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
 }
