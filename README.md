@@ -35,9 +35,9 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
 
 1. Use the component in your HTML
 
-        <pastac-example-component initial-name="Turtle" on-done="sayHello(name)"></pastac-example-component>
+        <pastac-example-component initial-name="Turtle" on-done="sayHello(name)"></pastac-example-component>  
 
-  or in the case of using Pug (previously called Jade)
+    or in the case of using Pug (previously called Jade)  
 
         pastac-example-component(initial-name="Turtle" on-done="sayHello(name)")
 
