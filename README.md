@@ -55,19 +55,18 @@ The value for name initially displayed in the input box.
 This should be the name of a function defined within the scope of your application, which
 takes a single parameter, which must be specifed as `name` in the HTML tag.
 
-        $scope.giveGreeting = function(name) {
-          alert('Hello ' + name);
-        };
+    $scope.giveGreeting = function(name) {
+      alert('Hello ' + name);
+    };
 
 ## Styling
-The styles used in this component are documented [here](https://tooltwist.github.io/pastac-example-component/).
-
-Feel free to override these styles with your own stylesheet.
+The styles used in this component are documented [here](https://tooltwist.github.io/pastac-example-component/) - feel free to override them with your own stylesheet.
 
 ## Contributing
-This project is built using Gulp. You can build using `gulp install`, clean up using `gulp clean`.
-To test the component using test/index.html run `gulp serve`.
-To run unit tests using Karma run `gulp test`.  The `gulp testloop` command waits for files
-to change and re-runs these tests automatically.
+This project is built using Gulp. You can build using `gulp install`, clean up using `gulp clean`,
+interact with the component (see test/index.html) using `gulp serve`, and
+run unit tests using Karma run `gulp test`.
+
+The `gulp testloop` command re-runs the unit tests any time source files are changed.
 
 See CONTRIBUTING.md for more details.
