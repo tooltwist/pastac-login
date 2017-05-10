@@ -1,6 +1,6 @@
 {
   "name": "pastac-example-component",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "dependencies": {
     "bootstrap": "^3.3.7"
   },
