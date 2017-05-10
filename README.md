@@ -26,28 +26,28 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
 
 1. Include the component in your page
 
-  <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
-  <script src="bower_components/angular/angular.min.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
-  <script src="bower_componenets/example-component.js" type="text/javascript"></script>
+        <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>  
+        <script src="bower_components/angular/angular.min.js"></script>  
+        <script src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>  
+        <script src="bower_componenets/example-component.js" type="text/javascript"></script>  
 
 1. Use the component in your HTML
 
-        <pastac-example-component initial-name="Turtle" on-done="sayHello(name)"></pastac-example-component>
+      <pastac-example-component initial-name="Turtle" on-done="sayHello(name)"></pastac-example-component>
 
   or in the case of using Pug (previously called Jade)
 
 
-        pastac-example-component(initial-name="Turtle" on-done="sayHello(name)")
+      pastac-example-component(initial-name="Turtle" on-done="sayHello(name)")
 
 1. Invoke the module in your Angular initialization
 
 
-    var module = angular.module('myApp', [ 'pastac-example-component' ]);
+      var module = angular.module('myApp', [ 'pastac-example-component' ]);
 
-    module.controller('myCtrl', function(...) {
-      ...
-    });
+      module.controller('myCtrl', function(...) {
+        ...
+      });
 
 
 ## Contributing
