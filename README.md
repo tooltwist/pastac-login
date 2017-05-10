@@ -44,10 +44,7 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
 1. Invoke the module in your Angular initialization
 
         var module = angular.module('myApp', [ 'pastac-example-component' ]);
-        
-        module.controller('myCtrl', function(...) {
-          ...
-        });
+        ...
 
 
 ## Contributing
