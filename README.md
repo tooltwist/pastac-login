@@ -46,6 +46,23 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
         var module = angular.module('myApp', [ 'pastac-example-component' ]);
         ...
 
+## Component Attributes
+
+#### initial-name [optional]
+The value for name initially displayed in the input box.
+
+#### on-done [optional]
+This should be the name of a function defined within the scope of your application, which
+takes a single parameter, which must be specifed as `name` in the HTML tag.
+
+        $scope.giveGreeting = function(name) {
+          alert('Hello ' + name);
+        };
+
+## Styling
+The styles used in this component are documented [here](https://tooltwist.github.io/pastac-example-component/).
+
+Feel free to override these styles with your own stylesheet.
 
 ## Contributing
 This project is built using Gulp. You can build using `gulp install`, clean up using `gulp clean`.
