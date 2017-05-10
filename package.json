@@ -1,0 +1,57 @@
+{
+  "name": "example-component",
+  "version": "0.0.1",
+  "description": "exampleComponent",
+  "keywords": [
+    "pug",
+    "angular",
+    "sass",
+    "teaservice",
+    "authservice",
+    "crowdhound",
+    "tooltwist",
+    "pastac"
+  ],
+  "homepage": "https://github.com/philcal/example-component",
+  "bugs": "https://github.com/philcal/example-component/issues",
+  "author": {
+    "name": "Philip Callender",
+    "email": "",
+    "url": "https://github.com/philcal"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philcal/example-component.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-uglify": "^2.1.2",
+    "jasmine": "^2.4.1",
+    "karma": "1.x || ^0.13.0",
+    "karma-chrome-launcher": "1.x || ^0.2.0",
+    "karma-jasmine": "1.x || ^0.3.6",
+    "karma-ng-html2js-preprocessor": "^1.0.0",
+    "pump": "^1.0.2",
+    "run-sequence": "^1.2.2",
+    "sassdoc": "^2.2.2"
+  },
+  "dependencies": {
+    "browser-sync": "^2.18.8",
+    "gulp-changed": "^3.1.0",
+    "gulp-clean": "^0.3.2",
+    "gulp-debug": "^3.1.0",
+    "gulp-pug": "^3.3.0"
+  },
+  "scripts": {
+    "test": "gulp test"
+  }
+}
