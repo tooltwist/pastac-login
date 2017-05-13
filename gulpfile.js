@@ -4,6 +4,7 @@ const debug = require('gulp-debug');
 const pug = require('gulp-pug');
 const sass = require('gulp-sass');
 const changed = require('gulp-changed');
+const exec = require('child_process').exec;
 const uglify = require('gulp-uglify');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
@@ -100,7 +101,7 @@ gulp.task('sass', function() {
 
 gulp.task('sassdoc', function () {
   var sassdocOptions = {
-    dest: 'docs',
+    dest: 'docs/styles',
     verbose: true,
     display: {
       access: ['public', 'private'],
@@ -123,6 +124,14 @@ gulp.task('sassdoc', function () {
     .src('src/*.scss')
     .pipe(sassdoc(sassdocOptions))
     .resume();
+});
+
+gulp.task('apidoc', function(cb) {
+  exec('bin/2.generate-api-docs.sh', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
 });
 
 gulp.task('testpage', (done) => {
@@ -175,7 +184,9 @@ gulp.task('serve', function() {
     .watch(['src/**/*.*', 'test/**/*.*'], ['testpage', 'pug', 'sass', 'js', 'minjs'])
 });
 
-gulp.task('install', ['pug', 'sass', 'js', 'minjs', 'sassdoc']);
+gulp.task('docs', ['apidoc', 'sassdoc']);
+
+gulp.task('install', ['pug', 'sass', 'js', 'minjs', 'docs']);
 
 gulp.task('other-tasks-message', function(done) {
   console.log();

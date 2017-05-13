@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+#
+#	See https://github.com/tooltwist/slate.git
+
+HERE=$(cd `dirname $0`; pwd)
+
+cd ${HERE}/slate
+
+exec docker-compose up --force-recreate
