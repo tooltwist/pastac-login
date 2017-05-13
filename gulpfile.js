@@ -105,7 +105,7 @@ gulp.task('sassdoc', function () {
     verbose: true,
     display: {
       access: ['public', 'private'],
-      alias: true,
+      alias: false,
       watermark: true,
     },
     groups: {
@@ -117,7 +117,8 @@ gulp.task('sassdoc', function () {
       crowdhound: 'Crowdhound.io',
       teaservice: 'TEAservice.io',
     },
-    basePath: 'https://github.com/tooltwist/pastac-example-component/tree/master/src',
+    //basePath: 'https://github.com/tooltwist/pastac-example-component/tree/master/src',
+    theme: 'flippant'
   };
 
   return gulp
