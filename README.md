@@ -1,8 +1,17 @@
 # exampleComponent
 
 
+## Creating a new Angular component aof PastaC
+This component provides an example of an Angular component for PastaC (or other Angular projects).
 
-## Getting Started
+It also forms a template that can be used to create other components. The gist
+[here](https://gist.github.com/philcal/1c9d9ca8694eb662f525c8d503db6b4f) will
+create an initial component for you. You can run it as...
+
+    $ cd bower_components
+    $ pastac-new-component.sh <myComponentName>
+
+## Using this Example
 This module is treated as a standard Angular 1 component. To use it on an Angular page:
 
 1. Download the component into your project
