@@ -1,68 +1,69 @@
-# The PastaC Example Component
-
-This is an example of an "all the bells and whistles" Angular component, including:
-
-- the component itself
-- using Pug and Sass
-- using Gulp during development and to deploy, including BrowserSync
-- using bower and npm to download dependencies
-- a test page
-- using Karma for unit tests
-- Documenting the styles with Sassdoc
-- Documenting the component using Slate
-
-## Creating a new Angular component aof PastaC
-This component provides an example of an Angular component for PastaC \(or any other Angular project\).
-
-It also forms a template that can be used to create other components. The gist
-[here](https://gist.github.com/philcal/1c9d9ca8694eb662f525c8d503db6b4f) will
-create an initial component for you. You can run it as...
-
-    $ cd bower_components
-    $ pastac-new-component.sh <myComponentName>
-    
-You can then immediately use the script. To run it standalone use:
-
-    $ cd pastac-myComponentName
-    $ gulp serve
-
-This will show the test page and the component in a browser, and any changes
-to the source will cause the page to be refreshed.
-
-## Using this Example
+## Getting Started
 This module is treated as a standard Angular 1 component. To use it on an Angular page:
 
 1. Download the component into your project
 
-        bower install pastac-example-component --save
+      bower install pastac-example-component --save
 
 1. Include the component in your page
 
-```html
-        <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>  
-        <script src="bower_components/angular/angular.min.js"></script>  
-        <script src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>  
-        <script src="bower_components/pastac-example-component/dist/pastac-example-component.js" type="text/javascript"></script>  
-```
+      script(src="bower_components/jquery/dist/jquery.js" type="text/javascript")  
+      script(src="bower_components/angular/angular.min.js")  
+      script(src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript")  
+      script(src="bower_components/pastac-example-component/dist/pastac-example-component.js" type="text/javascript")  
 
-1. Use the component in your HTML
+1. Use the component in your Pug files (formerly called Jade)  
 
-```html
-        <pastac-example-component initial-name="Turtle" on-done="sayHello(name)"></pastac-example-component>  
-```
+      pastac-example-component(initial-name="Turtle" on-done="sayHello(name)")
 
-    or in the case of using Pug (previously called Jade)  
-
-```html
-        pastac-example-component(initial-name="Turtle" on-done="sayHello(name)")
-```
 
 1. Invoke the module in your Angular initialization
 
-```html
+```javascript
         var module = angular.module('myApp', [ 'pastac-example-component' ]);
         ...
 ```
+
+## Cloning this component to create your own component
+PastaC components are intended to be easy to clone and modify, so developers can create new components,
+which will also be easy to clone and modify. With luck this will allow the community to evolve and
+mature the avilable components without each developer having to repeat the work of those before them.
+
+The [pastac-example-component](https://github.com/tooltwist/pastac-example-component) is the great granddad
+of most PastaC components. If you wish to create a totally new component, but don't have a relevant
+component to base it upon, then download this project from Github and clone it.
+
+Cloning this component is as simple as running a script provided with this component, following these steps:
+
+1. Download the full component to source from Github, not the published version from bower.
+
+2. Run the provided cloning script:
+
+```bash
+    $ cd bower_components
+    $ pastac-existing-component/clone-this-component.js new-component-name
+    $ cd new-component-name
+    $ gulp serve
+```
+
+You can then (a) check that the clone worked correctly, by interacting with the component on a test page,
+and (b) start development on modifying the component.
+
+## Why Clone?
+
+Angular components are not particularly hard to create, however there is a lot of supporting tools, code
+and scripts required to properly test, document and deploy the component. By cloning, you get all the
+following immediately:
+
+- a working Angular component
+- that uses [Pug](https://pugjs.org) and [Sass](http://sass-lang.com/)
+- uses [Gulp](gulpjs.com) during development and to deploy
+- live browser reload during development, using [BrowserSync](https://browsersync.io/docs/gulp)
+- Uses [Bower](https://bower.io/) and [Npm](https://www.npmjs.com) to download dependencies
+- a test page for manual testing
+- [Karma](https://karma-runner.github.io) is used to drive unit tests run within an actual browser
+- generated documentation of SASS/CSS styles with [Sassdoc](sassdoc.com/)
+- Documenting the component using [Slate](https://github.com/lord/slate)
 
 
 ## Contributing
