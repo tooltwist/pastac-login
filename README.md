@@ -1,8 +1,18 @@
 # exampleComponent
 
+This is an example of an "all the bells and whistles" Angular component, including:
+
+- the component itself
+- using Pug and Sass
+- using Gulp during development and to deploy, including BrowserSync
+- using bower and npm to download dependencies
+- a test page
+- using Karma for unit tests
+- Documenting the styles with Sassdoc
+- Documenting the component using Slate
 
 ## Creating a new Angular component aof PastaC
-This component provides an example of an Angular component for PastaC (or other Angular projects).
+This component provides an example of an Angular component for PastaC \(or any other Angular project\).
 
 It also forms a template that can be used to create other components. The gist
 [here](https://gist.github.com/philcal/1c9d9ca8694eb662f525c8d503db6b4f) will
@@ -10,6 +20,14 @@ create an initial component for you. You can run it as...
 
     $ cd bower_components
     $ pastac-new-component.sh <myComponentName>
+    
+You can then immediately use the script. To run it standalone use:
+
+    $ cd pastac-myComponentName
+    $ gulp serve
+
+This will show the test page and the component in a browser, and any changes
+to the source will cause the page to be refreshed.
 
 ## Using this Example
 This module is treated as a standard Angular 1 component. To use it on an Angular page:
