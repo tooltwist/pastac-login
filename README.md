@@ -1,4 +1,4 @@
-# exampleComponent
+# The PastaC Example Component
 
 This is an example of an "all the bells and whistles" Angular component, including:
 
