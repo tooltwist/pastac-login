@@ -39,6 +39,8 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
 
 
 ## Contributing
+To develop this component or create a derived component, clone the Github repository into the bower directory.
+
 This project is built using Gulp.
 
 - To get started, run `bower install` and `gulp install` to prepare the component for development.
