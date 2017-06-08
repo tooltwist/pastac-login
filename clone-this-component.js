@@ -15,7 +15,7 @@ fi
 # Decide a name for the new component
 # Strip off the 'pastac-' prefix
 nname=${1}
-if echo "${nname}" | grep '^pastac-' ; then
+if echo "${nname}" | grep '^pastac-' > /dev/null ; then
 	nname=$(echo "${nname}" | sed 's/^pastac-//')
 fi
 
@@ -27,15 +27,15 @@ parentdir=$(dirname ${scriptdir})
 
 
 # Check the component being cloned is a pastac component
-if echo $oname | grep ^pastac- ; then
+if echo $oname | grep ^pastac- > /dev/null ; then
 	oname=$(echo ${oname} | sed 's/^pastac-//' )
 else
 	echo ""
 	echo "ERROR: current component name must match 'matching pastac-*'."
 	exit 1
 fi
-echo oname=${oname}
-echo nname=${nname}
+#echo oname=${oname}
+#echo nname=${nname}
 
 # Work out the variations of the component names used in files
 #	pastac-my-component
@@ -59,37 +59,6 @@ newname=${to1}
 
 
 
-echo "${from1} => ${to1}"
-echo "${from2} => ${to2}"
-echo "${from3} => ${to3}"
-echo "${from4} => ${to4}"
-
-
-# Work out the directories
-src=${parentdir}/${oldname}
-dst=${parentdir}/${newname}
-echo SRC=${src}
-echo DST=${dst}
-
-
-# Check the component does not already exist
-if [ -d "${dst}" ] ; then
-  echo
-  echo "Error: directory ${dst} already exists."
-  exit 1
-fi
-
-
-# Now create the new directory and its contents
-mkdir $dst
-echo "## Copying files..."
-(
-	cd ${src};
-	find . \( -type d \( -name node_modules -o -name bower_components \) -prune \) -o -type f -print0 \
-	| tar -cf - --null -T -
-) | (cd $dst; tar xf -)
-
-
 # Display a nice message
 echo "###"
 echo "###"
@@ -98,9 +67,42 @@ echo "###"
 echo "###"
 
 
+# Work out the directories
+src=${parentdir}/${oldname}
+dst=${parentdir}/${newname}
+
+
+# Check the component does not already exist
+if [ -d "${dst}" ] ; then
+  echo
+  echo "Error: directory ${dst} already exists."
+  echo
+  exit 1
+fi
+echo ""
+echo "src = ${src}"
+echo "dst = ${dst}"
+
+
+# Now create the new directory and its contents
+mkdir $dst
+echo ""
+echo "## Duplicating files..."
+(
+	cd ${src};
+	find . \( -type d \( -name node_modules -o -name bower_components \) -prune \) -o -type f -print0 \
+	| tar -cf - --null -T -
+) | (cd $dst; tar xf -)
+
+
 # Switch into the directory and move a few files around
 echo ""
-echo "## Make a few adjustments"
+echo "## Replace strings in the files..."
+echo "  ${from1} => ${to1}"
+echo "  ${from2} => ${to2}"
+echo "  ${from3} => ${to3}"
+echo "  ${from4} => ${to4}"
+echo ""
 echo "$" cd ${dst}
          cd ${dst}
 echo "$" rm dist/*
@@ -122,25 +124,25 @@ echo "$" git remote rm origin
 # Change the component name
 echo ""
 echo "## Replacing component name in files..."
-echo '$ grep -rl ${from1} *'
+echo "$ grep -rl ${from1} *"
 for file in `grep -rl "${from1}" *` ; do
   echo "$ sed -i \"\" \"s/${from1}/${to1}/g\" ${file}"
           sed -i "" "s/${from1}/${to1}/g" ${file}
   [ $? != 0 ] && exit 1
 done
-echo '$ grep -rl ${from2} *'
+echo "$ grep -rl ${from2} *"
 for file in `grep -rl "${from2}" *` ; do
   echo "$ sed -i \"\" \"s/${from2}/${to2}/g\" ${file}"
           sed -i "" "s/${from2}/${to2}/g" ${file}
   [ $? != 0 ] && exit 1
 done
-echo '$ grep -rl ${from3} *'
+echo "$ grep -rl ${from3} *"
 for file in `grep -rl "${from3}" *` ; do
   echo "$ sed -i \"\" \"s/${from3}/${to3}/g\" ${file}"
           sed -i "" "s/${from3}/${to3}/g" ${file}
   [ $? != 0 ] && exit 1
 done
-echo '$ grep -rl ${from4} *'
+echo "$ grep -rl ${from4} *"
 for file in `grep -rl "${from4}" *` ; do
   echo "$ sed -i \"\" \"s/${from4}/${to4}/g\" ${file}"
           sed -i "" "s/${from4}/${to4}/g" ${file}
@@ -165,10 +167,6 @@ echo "## Run gulp to install the project"
 echo "$" gulp install
          gulp install
 
-# A new origin should be added
-echo ""
-echo ""
-
 
 # Finish up
 echo ""
@@ -176,7 +174,11 @@ echo ""
 echo ""
 echo "###"
 echo "###"
-echo "###	HURRAY! Your new component ${newname} is ready."
+echo "###		HURRAY!"
+echo "###"
+echo "### Your new component ${newname} is ready at:"
+echo "###"
+echo "###      ${dst}"
 echo "###"
 echo "###"
 echo "### You will need to create a new Github project and define it as a remote"
