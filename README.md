@@ -46,12 +46,12 @@ Cloning this component is as simple as running a script provided with this compo
 
 2. Run the provided cloning script:
 
-```bash
+    ```shell
     $ cd bower_components
     $ pastac-existing-component/clone-this-component.js new-component-name
     $ cd new-component-name
     $ gulp serve
-```
+    ```
 
 You can then (a) check that the clone worked correctly, by interacting with the component on a test page,
 and (b) start development on modifying the component.
