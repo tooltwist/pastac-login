@@ -1,5 +1,5 @@
 {
-  "name": "pastac-example-component",
+  "name": "pastac-login",
   "version": "0.0.3",
   "description": "exampleComponent",
   "keywords": [
@@ -12,8 +12,8 @@
     "crowdhound",
     "tooltwist"
   ],
-  "homepage": "https://github.com/tooltwist/pastac-example-component",
-  "bugs": "https://github.com/tooltwist/pastac-example-component/issues",
+  "homepage": "https://github.com/tooltwist/pastac-login",
+  "bugs": "https://github.com/tooltwist/pastac-login/issues",
   "author": {
     "name": "Philip Callender",
     "email": "",
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tooltwist/pastac-example-component.git"
+    "url": "https://github.com/tooltwist/pastac-login.git"
   },
   "licenses": [
     {

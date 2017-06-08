@@ -117,7 +117,7 @@ gulp.task('sassdoc', function () {
       crowdhound: 'Crowdhound.io',
       teaservice: 'TEAservice.io',
     },
-    //basePath: 'https://github.com/tooltwist/pastac-example-component/tree/master/src',
+    //basePath: 'https://github.com/tooltwist/pastac-login/tree/master/src',
     theme: 'flippant'
   };
 

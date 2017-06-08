@@ -1,5 +1,5 @@
 {
-  "name": "pastac-example-component",
+  "name": "pastac-login",
   "version": "0.0.4",
   "dependencies": {
     "bootstrap": "^3.3.7"

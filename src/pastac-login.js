@@ -1,21 +1,21 @@
 'use strict';
 
 
-angular.module('pastac-example-component', [])
+angular.module('pastac-login', [])
 
-.component('pastacExampleComponent', {
-  controller: PastacExampleComponentController,
+.component('pastacLogin', {
+  controller: PastacLoginController,
   controllerAs: 'ctrl',
   bindings: {
     // Bind parameters from the HTML element that invokes this
     initialName: '@',
     onDone: '&'
   },
-  templateUrl: 'dist/example-component.html'
+  templateUrl: 'dist/pastac-login.html'
 });
 
 
-function PastacExampleComponentController($scope) {
+function PastacLoginController($scope) {
   var ctrl = this;
 
   // Set a default name in this component
