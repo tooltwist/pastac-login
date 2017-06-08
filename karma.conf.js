@@ -38,7 +38,7 @@ module.exports = function(config) {
       // <script src="../bower_components/angular/angular.min.js"></script>
       // <script src="../bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
       //
-      // <script src="../dist/example-component.js" type="text/javascript"></script>
+      // <script src="../dist/pastac-example-component.js" type="text/javascript"></script>
 
 
     	//'bower_components/angular-unstable/angular.js',
@@ -46,12 +46,12 @@ module.exports = function(config) {
       'bower_components/angular/angular.js',
       'bower_components/bootstrap/dist/js/bootstrap.js',
     	'bower_components/angular-mocks/angular-mocks.js',
-      //'dist/example-component.js',
-      {pattern: 'dist/example-component.js', included: true, served: true, watched: true, nocache: true},
+      //'dist/pastac-example-component.js',
+      {pattern: 'dist/pastac-example-component.js', included: true, served: true, watched: true, nocache: true},
       //'dist/*.html',
       //'dist/*.css',
     	'test/spec/example.js',
-      //{pattern: 'dist/example-component.html', included: false, served: true, watched: true, nocache: true}
+      //{pattern: 'dist/pastac-example-component.html', included: false, served: true, watched: true, nocache: true}
       'dist/**/*.html'
     ],
 

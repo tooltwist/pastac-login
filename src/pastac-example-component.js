@@ -11,7 +11,7 @@ angular.module('pastac-example-component', [])
     initialName: '@',
     onDone: '&'
   },
-  templateUrl: 'dist/example-component.html'
+  templateUrl: 'dist/pastac-example-component.html'
 });
 
 

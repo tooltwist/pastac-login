@@ -15,7 +15,7 @@ This module is treated as a standard Angular 1 component. To use it on an Angula
         <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>  
         <script src="bower_components/angular/angular.min.js"></script>  
         <script src="bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>  
-        <script src="bower_components/example-component.js" type="text/javascript"></script>  
+        <script src="bower_components/pastac-example-component/dist/pastac-example-component.js" type="text/javascript"></script>  
 ```
 
 1. Use the component in your HTML
