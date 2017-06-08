@@ -36,7 +36,7 @@ PastaC components are intended to be easy to clone and modify, so developers can
 which will also be easy to clone and modify. With luck this will allow the community to evolve and
 mature the avilable components without each developer having to repeat the work of those before them.
 
-The [pastac-login](https://github.com/tooltwist/pastac-login) is the great granddad
+The [pastac\-example\-component](https://github.com/tooltwist/pastac\-example\-component) is the great granddad
 of most PastaC components. If you wish to create a totally new component, but don't have a relevant
 component to base it upon, then download this project from Github and clone it.
 
