@@ -6,6 +6,7 @@ const sass = require('gulp-sass');
 const changed = require('gulp-changed');
 const exec = require('child_process').exec;
 const uglify = require('gulp-uglify');
+const gutil = require('gulp-util');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const pump = require('pump');
@@ -45,7 +46,6 @@ gulp.task('minjs', function(cb) {
 });
 
 gulp.task('pug', (done) => {
-
   return gulp.src('src/*.pug')
     // Look for files newer than the corresponding .html
     // file in the destination directory.
@@ -60,10 +60,11 @@ gulp.task('pug', (done) => {
         gutil.log(err.message);
         this.emit('end'); // prevents watch from dying
     })
-    .pipe(debug({ title: 'pug:', showFiles: false }))
+    .pipe(debug({ title: 'pug:', showFiles: true }))
     // Place the resultant HTML file into the destination directory.
     .pipe(gulp.dest('dist'))
     .pipe(browserSync.stream())
+    .resume()
     ;
 
     done();
@@ -175,8 +176,16 @@ gulp.task('testloop', function() {
 gulp.task('serve', function() {
   browserSync.init({
       server: {
-          baseDir: '.',
-          index: "test/index.html"
+        baseDir: '../..',
+        // index: "bower_components/pastac-login/test/index.html",
+        middleware: [{
+          route: "/",
+          handle: (req, res, next) => {
+            res.writeHead(302,  { 'Location': '/bower_components/pastac-login/test/test-navbar.html' })
+            res.end()
+            next()
+          }
+        }]
       },
       port: 3070,
       //reloadDelay: 200 // Give the server time to pick up the new files.
