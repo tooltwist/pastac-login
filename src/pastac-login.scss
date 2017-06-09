@@ -48,3 +48,185 @@ pastac-login {
   width: $width;
   height: $height;
 }
+
+#authservice-login-div {
+  padding: 10px;
+  width: 300px;
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+#authservice-forgot-div {
+  padding: 20px;
+  width: 300px;
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+#authservice-register-div {
+  padding: 20px;
+  width: 300px;
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+#authservice-register-done {
+  padding: 20px;
+  width: 300px;
+}
+
+
+
+  //
+  //  The Bootstrap navbar classes have trouble with a
+  //  'pastac-login' element being interjected between
+  //  the <li> and <a> elements, so we'll duplicate the
+  //  style definitions with the variation.
+
+  // bootstrap.css, line 3986
+  // .nav > li > a {
+  //   position: relative;
+  //   display: block;
+  //   padding: 10px 15px;
+  // }
+  // .nav > li > a:hover,
+  // .nav > li > a:focus {
+  //   text-decoration: none;
+  //   background-color: #eee;
+  // }
+  // .nav > li.disabled > a {
+  //   color: #777;
+  // }
+  // .nav > li.disabled > a:hover,
+  // .nav > li.disabled > a:focus {
+  //   color: #777;
+  //   text-decoration: none;
+  //   cursor: not-allowed;
+  //   background-color: transparent;
+  // }
+  .nav > li > pastac-login > a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+  }
+  .nav > li > pastac-login > a:hover,
+  .nav > li > pastac-login > a:focus {
+    text-decoration: none;
+    background-color: #eee;
+  }
+  .nav > li.disabled > pastac-login > a {
+    color: #777;
+  }
+  .nav > li.disabled > pastac-login > a:hover,
+  .nav > li.disabled > pastac-login > a:focus {
+    color: #777;
+    text-decoration: none;
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+
+  // 4018
+  // .nav > li > a > img {
+  //   max-width: none;
+  // }
+  .nav > li > pastac-login > a > img {
+    max-width: none;
+  }
+
+  // 4329
+  // bootstrap.css, line 4329
+  // .navbar-nav > li > a {
+  //   padding-top: 10px;
+  //   padding-bottom: 10px;
+  //   line-height: 20px;
+  // }
+  .navbar-nav > li > pastac-login > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 20px;
+  }
+
+  // 4345
+  // @media (max-width: 767px) {
+  //   ...
+  //   .navbar-nav .open .dropdown-menu > li > a,
+  //   .navbar-nav .open .dropdown-menu > li > a {
+  //     line-height: 20px;
+  //   }
+  //   .navbar-nav .open .dropdown-menu > li > a:hover,
+  //   .navbar-nav .open .dropdown-menu > li > a:focus {
+  //     background-image: none;
+  //   }
+  // }
+  @media (max-width: 767px) {
+    .navbar-nav .open .dropdown-menu > li > pastac-login > a,
+    .navbar-nav .open .dropdown-menu > li > pastac-login > a {
+      line-height: 20px;
+    }
+    .navbar-nav .open .dropdown-menu > li > pastac-login > a:hover,
+    .navbar-nav .open .dropdown-menu > li > pastac-login > a:focus {
+      background-image: none;
+    }
+  }
+
+  // 4365
+  // @media (min-width: 768px) {
+  //   .navbar-nav > li > a {
+  //     padding-top: 15px;
+  //     padding-bottom: 15px;
+  //   }
+  // }
+  @media (min-width: 768px) {
+    .navbar-nav > li > pastac-login > a {
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+  }
+
+  // 4513
+  // .navbar-default .navbar-nav > li > a {
+  //   color: #777;
+  // }
+  // .navbar-default .navbar-nav > li > a:hover,
+  // .navbar-default .navbar-nav > li > a:focus {
+  //   color: #333;
+  //   background-color: transparent;
+  // }
+  .navbar-default .navbar-nav > li > pastac-login > a {
+    color: #777;
+  }
+  .navbar-default .navbar-nav > li > pastac-login > a:hover,
+  .navbar-default .navbar-nav > li > pastac-login > a:focus {
+    color: #333;
+    background-color: transparent;
+  }
+
+  // 4609
+  // .navbar-inverse .navbar-nav > li > a {
+  //   color: #9d9d9d;
+  // }
+  // .navbar-inverse .navbar-nav > li > a:hover,
+  // .navbar-inverse .navbar-nav > li > a:focus {
+  //   color: #fff;
+  //   background-color: transparent;
+  // }
+  .navbar-inverse .navbar-nav > li > pastac-login > a {
+    color: #9d9d9d;
+  }
+  .navbar-inverse .navbar-nav > li > pastac-login > a:hover,
+  .navbar-inverse .navbar-nav > li > pastac-login > a:focus {
+    color: #fff;
+    background-color: transparent;
+  }
+
+
+  // PAGE mode
+  .pastac-login-page-mode-frame {
+    //width: 300px;
+    min-height: 300px;
+    border: solid 1px #ccc;
+    //padding: 20px;
+  }

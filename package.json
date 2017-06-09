@@ -50,6 +50,7 @@
     "gulp-clean": "^0.3.2",
     "gulp-debug": "^3.1.0",
     "gulp-pug": "^3.3.0",
+    "gulp-util": "^3.0.8",
     "sassdoc-theme-flippant": "^0.1.0",
     "sassdoc-theme-vulcan": "^0.2.0"
   },
