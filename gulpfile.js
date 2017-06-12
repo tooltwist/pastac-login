@@ -187,7 +187,7 @@ gulp.task('serve', function() {
           }
         }]
       },
-      port: 3070,
+      port: 3030,
       //reloadDelay: 200 // Give the server time to pick up the new files.
   });
   return gulp

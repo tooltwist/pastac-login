@@ -105,6 +105,14 @@ block content
           button(type="submit" id="authservice-register-ok").btn.btn-default ok
         //- div
       //- li
+      
+      li(ng-hide="ctrl.hideFacebook")
+        a(ng-click="ctrl.initiate_oauth2('facebook')") Signin with Facebook
+      li(ng-hide="ctrl.hideGoogle")
+        a(ng-click="ctrl.initiate_oauth2('google')") Signin with Google
+      li(ng-hide="ctrl.hideGithub")
+        a(ng-click="ctrl.initiate_oauth2('github')") Signin with Github
+
     //- ul
 
 

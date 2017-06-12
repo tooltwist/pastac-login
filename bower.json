@@ -2,7 +2,8 @@
   "name": "pastac-login",
   "version": "0.0.4",
   "dependencies": {
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "jwt-decode": "^2.2.0"
   },
   "devDependencies": {
     "angular-unstable": "latest",

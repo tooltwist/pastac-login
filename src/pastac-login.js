@@ -99,6 +99,13 @@ function PastacLoginController($scope, $timeout) {
       }
     });
 
+    ctrl.initiate_oauth2 = function(authority) {
+
+      var url = 'http://' + AUTHSERVICE_HOST + ':' + AUTHSERVICE_PORT + '/v2/oauth2/initiate/' + AUTHSERVICE_TENANT + '/' + authority;
+      //alert('LOGIN using:' + url)
+      window.location = url;
+    }
+
 
 
 
