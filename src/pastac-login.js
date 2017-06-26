@@ -61,8 +61,6 @@ function PastacLoginController($scope, $timeout) {
   var firstUser = true;
   var userHandler = null;
 
-  ctrl.junk = 'JUNKYARP'
-
   ctrl.$onInit = function() {
 
     // Set the initial mode
@@ -95,7 +93,6 @@ function PastacLoginController($scope, $timeout) {
         }
 
         // $timeout(function(){
-        //$scope.user = user;
         ctrl.user = user;
         console.log('\nSETTING USER:', user);
         // });
@@ -120,7 +117,6 @@ function PastacLoginController($scope, $timeout) {
       var password = ctrl.password;
       ctrl.password = '';
       authservice.login(ctrl.username, password, function(user) {
-        //alert('got user!');
         ctrl.username = '';
         $('#pastac-login-modal').modal('hide')
       }, function(error) {
@@ -137,6 +133,7 @@ function PastacLoginController($scope, $timeout) {
       ctrl.username = '';
       ctrl.password = '';
     }
+
 
     ctrl.doRegister = function() {
 

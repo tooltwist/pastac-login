@@ -637,10 +637,6 @@ console.log('*** Using jQuery AJAX call');
 
       $('#authservice-logout-button').click(function(){
         authservice.logout();
-        // var isFromCookie = false;
-        // setCurrentUser(null, null, isFromCookie);
-        // authservice.resetLoginMenu();
-        // return false;
       });
 
 
@@ -730,9 +726,7 @@ console.log('*** Using jQuery AJAX call');
         username: username,
         password: password
       };
-      console.log('login 1');
       authservice_ajax_call('POST', '/login', params, function(response) {
-        console.log('login 2', response);
 
           if (response.status == 'ok') {
 
