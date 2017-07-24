@@ -9,10 +9,17 @@ block content
     //- a.inline(href="", ng-hide="ctrl.user")
     //-   .glyphicon.glyphicon-user
     //-   | Sign Up
-    a.dropdown-toggle(ng-hide="ctrl.user", href="", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
-      .glyphicon.glyphicon-log-in
+    //- a.dropdown-toggle(ng-hide="ctrl.user", href="", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false")
+    //-   .glyphicon.glyphicon-log-in
+    //-   span(ng-hide="ctrl.signin") &nbsp; Login &nbsp;
+    //-   span(ng-hide="!ctrl.signin") &nbsp; Sign in &nbsp;
+    a.dropdown-toggle.info#pastac-login-navbar-dropdown(ng-hide="ctrl.user", data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false').red
+      span.fa-stack.fa-lg
+        i.fa.fa-circle.fa-stack-2x
+        i.fa.fa-user.fa-stack-1x.fa-inverse
       span(ng-hide="ctrl.signin") &nbsp; Login &nbsp;
       span(ng-hide="!ctrl.signin") &nbsp; Sign in &nbsp;
+
       
     ul.dropdown-menu(ng-hide="ctrl.user", role="menu" aria-labelledby="signed-in-menu-button")
       // LOGIN
@@ -30,7 +37,16 @@ block content
             button.btn.btn-success.btn-block(ng-click="ctrl.doEmailSignin(); $event.stopPropagation();")
               span(ng-hide="ctrl.signin") Login
               span(ng-hide="!ctrl.signin") Sign in
-            div(ng-hide="ctrl.hideForgot")
+              
+            // Error message
+            div(ng-hide="!ctrl.loginError")
+              br
+              .alert.alert-danger
+                span.glyphicon.glyphicon-exclamation-sign.aria-hidden
+                span.sr-only &nbsp;&nbsp;Error:
+                | {{ctrl.loginError}}
+              
+            div(ng-hide="ctrl.hideForgot").hide.NOTYET
               br
               .text-center()
                 a(ng-click="ctrl.setMode('forgot'); $event.stopPropagation();") Forgot password
@@ -52,17 +68,7 @@ block content
               i.fa.fa-github.left
               span(ng-hide="ctrl.signin") &nbsp;Login with Github
               span(ng-hide="!ctrl.signin") &nbsp;Sign in with Github
-
-
-
-
-
-
           //- form
-          div(id="authservice-login-errmsg" role="alert" style="display:none;").alert.alert-danger
-            span.glyphicon.glyphicon-exclamation-sign.aria-hidden
-            span.sr-only Error:
-            | Invalid email / password
           //- div
         //- div
       //- li
@@ -108,17 +114,27 @@ block content
           form
             p
               | Hi!
-              | Enter your email address and a password and we'll
-              | be happy to sign you up.
+              | Enter your email address
+              span(ng-if="ctrl.registerWithField('password')") &nbsp;and a password
+              | &nbsp;and we'll be happy to sign you up.
             //- p
             div.form-group
               input(type="email" ng-model="ctrl.register_email" placeholder="Email" autocomplete="off").form-control
             //- div
-            div.form-group
+            div.form-group(ng-hide="!ctrl.registerWithField('password')")
               // Trying to prevent autocomplete
               // See https://stackoverflow.com/questions/25823448/angular-ng-form-and-autocomplete-off
               input(type="password" ng-model="ctrl.register_password" placeholder="Password" autocomplete="new-password").form-control
             //- div
+            div(ng-hide="!ctrl.registerWithField('first_name')")
+              input.form-control(type='text', ng-model="ctrl.register_first_name", placeholder='First name')
+              br
+            div(ng-hide="!ctrl.registerWithField('middle_name')")
+              input.form-control(type='text', ng-model="ctrl.register_middle_name", placeholder='Middle name')
+              br
+            div(ng-hide="!ctrl.registerWithField('last_name')")
+              input.form-control(type='text', ng-model="ctrl.register_last_name", placeholder='Last name')
+              br
             a.btn.btn-info(href="#" ng-click="ctrl.doRegister(); $event.stopPropagation();") register
             button.btn.btn-default(href="#" ng-click="ctrl.register_password=''; ctrl.setMode('login'); $event.stopPropagation();") cancel
           //- form
@@ -154,14 +170,22 @@ block content
     //  SECTION FOR WHEN WE **ARE** SIGNED IN
     //
     //
-    a#signed-out-menu-button.dropdown-toggle(href="", ng-hide="!ctrl.user", data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
-      img.authservice-login-navbar-avatar(ng-hide="ctrl.hideAvatar" ng-src="{{ctrl.user.avatar}}", ng-cloak)
-      .glyphicon.glyphicon-user(ng-hide="!ctrl.hideAvatar")
-      | &nbsp; {{ctrl.user.firstname}}
-    ul.dropdown-menu(ng-hide="!ctrl.user", role="menu" aria-labelledby="signed-out-menu-button")
-      li.divider(role='separator')
+    //- a#signed-out-menu-button.dropdown-toggle(href="", ng-hide="!ctrl.user", data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
+    //-   img.authservice-login-navbar-avatar(ng-hide="ctrl.hideAvatar" ng-src="{{ctrl.user.avatar}}", ng-cloak)
+    //-   .glyphicon.glyphicon-user(ng-hide="!ctrl.hideAvatar")
+    //-   | &nbsp; {{ctrl.user.firstname}}
+    a.dropdown-toggle.info(ng-hide="ctrl.hideLogout || !ctrl.user" data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false' ng-cloak)
+      img.pastac-login-navbar-avatar(ng-hide="!ctrl.user.avatar" ng-src="{{ctrl.user.avatar}}", alt="")
+      span(ng-hide="ctrl.user.avatar").fa-stack.fa
+        i.fa.fa-circle.fa-stack-2x
+        i.fa.fa-user.fa-stack-1x.fa-inverse
+      | &nbsp;Hi {{ctrl.user.firstname}}
+      | !
+      
+    ul.dropdown-menu(ng-hide="ctrl.hideLogout || !ctrl.user", role="menu" aria-labelledby="signed-out-menu-button")
+      //- li.divider(role='separator')
       li
-        a(id="authservice-logout-button" data-toggle='modal')
+        a(Zid="authservice-logout-button" data-toggle='modal' ng-click="ctrl.doLogout()")
           span(ng-hide="ctrl.signin") Logout
           span(ng-hide="!ctrl.signin") Sign out
       //- li

@@ -108,7 +108,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub"></pastac-login>
+              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL"></pastac-login>
             </li>
           </ul>
         </div>
@@ -117,30 +117,62 @@
       <br/>
       <h3>Navbar with dropdown (template="navbar")</h3>
 
-      <input type="checkbox" ng-model="inverseColors"> Use inverse navbar
-      <br/>
-      <input type="checkbox" ng-model="saySignin"> "Sign in", rather than "Login"
-      <small>(signin="{{saySignin ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="hideRegister"> Hide the register option
-      <small>(hide-register="{{hideRegister ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="hideForgot"> Hide the "forgot password" option
-      <small>(hide-forgot="{{hideForgot ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="hideAvatar"> Use an icon instead of the user avatar
-      <small>(hide-avatar="{{hideAvatar ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="useFacebook"> Allow login using Facebook
-      <small>(facebook="{{useFacebook ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="useGoogle"> Allow login using Google
-      <small>(google="{{useGoogle ? true : false}}")</small>
-      <br/>
-      <input type="checkbox" ng-model="useGithub"> Allow login using Github
-      <small>(github="{{useGithub ? true : false}}")</small>
+      <div class="row">
+        <div class="col-md-6">
+          <input type="checkbox" ng-model="inverseColors"> Use inverse navbar
+          <br/>
+          <input type="checkbox" ng-model="saySignin"> "Sign in", rather than "Login"
+          <br/>
+          <input type="checkbox" ng-model="hideRegister"> Hide the register option
+          <br/>
+          <input type="checkbox" ng-model="hideForgot"> Hide the "forgot password" option
+          <br/>
+          <input type="checkbox" ng-model="hideAvatar"> Use an icon instead of the user avatar
+          <br/>
+        </div>
+        <div class="col-md-6">
+          <input type="checkbox" ng-model="useFacebook"> Allow login using Facebook
+          <br/>
+          <input type="checkbox" ng-model="useGoogle"> Allow login using Google
+          <br/>
+          <input type="checkbox" ng-model="useGithub"> Allow login using Github
+          <br/>
+          <input type="checkbox" ng-model="registerPassword" ng-change="setRegisterFields()"> Register with Password
+          <br/>
+          <input type="checkbox" ng-model="registerDetails" ng-change="setRegisterFields()"> Register with Extra Details
+        </div>
+      </div>
 
+      <br/>
+      <br/>
+      <hr/>
+      <h4>HTML</h4>
+      <pre>&lt;pastac-login config="authserviceConfig" template="navbar"
+        handler="userHandler" fresh-credentials="true"<span ng-if="saySignin">
+        signin="true"</span><span ng-if="hideRegister">
+        hide-register="true"</span><span ng-if="hideForgot">
+        hide-forgot="true"</span><span ng-if="hideAvatar">
+        hide-avatar="true"</span><span ng-if="useFacebook">
+        facebook="true"</span><span ng-if="useGoogle">
+        google="true"</span><span ng-if="useGithub">
+        github="true"</span><span ng-if="registerPassword || registerDetails">
+        register-fields="{{registerFields}}"</span>
+        error="{{errorURL}}"
+        resume="{{resumeURL}}"&gt;
+&lt;/pastac-login&gt;</pre>
+        <br/>
 
+      <h4>Pug / Jade</h4>
+      <pre>pastac-login(config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true"<span ng-if="saySignin"
+        > signin="true"</span><span ng-if="hideRegister"
+        > hide-register="true"</span><span ng-if="hideForgot"
+        > hide-forgot="true"</span><span ng-if="hideAvatar"
+        > hide-avatar="true"</span><span ng-if="useFacebook"
+        > facebook="true"</span><span ng-if="useGoogle"
+        > google="true"</span><span ng-if="useGithub"
+        > github="true"</span><span ng-if="registerPassword || registerDetails"
+        > register-fields="first_name,middle_name,last_name"</span
+        > error="{{errorURL}}" resume="{{resumeURL}}")</pre>
 
       <hr/>
       <h4>External scope</h4>
@@ -166,7 +198,8 @@
 <script>
 var AUTHSERVICE_HOST = 'localhost';
 var AUTHSERVICE_PORT = 9090;
-var AUTHSERVICE_TENANT = 'nodeclient';
+//var AUTHSERVICE_TENANT = 'nodeclient';
+var AUTHSERVICE_TENANT = 'drinkcircle';
 var AUTHSERVICE_USE_DUMMY_LOGIN = false;
 
 </script>
@@ -182,6 +215,10 @@ module.controller('myCtrl', function($scope, $timeout) {
   $scope.useFacebook = true;
   $scope.useGoogle = true;
   $scope.useGithub = true;
+  $scope.registerPassword = false;
+  $scope.registerDetails = false;
+  $scope.errorURL = '/bower_components/pastac-login/test/test-error.html';
+  $scope.resumeURL = 'zzz';
 
   $scope.authserviceConfig = {
     host: AUTHSERVICE_HOST,
@@ -196,6 +233,26 @@ module.controller('myCtrl', function($scope, $timeout) {
       $scope.ttuat = ttuat;
     }
   }
+
+  $scope.setRegisterFields = function() {
+    var sep = '';
+    var fields = '';
+    // var resumeURL = '/bower_components/pastac-login/test/test-welcome.html';
+    var resumeURL = '/bower_components/pastac-login/test/test-welcome-details.html';
+    if ($scope.registerPassword) {
+      fields += sep + 'password';
+      sep = ',';
+    }
+    if ($scope.registerDetails) {
+      fields += sep + 'first_name,middle_name,last_name';
+      sep = ',';
+      resumeURL = '/bower_components/pastac-login/test/test-navbar.html';
+    }
+    $scope.registerFields = fields;
+    $scope.resumeURL = resumeURL;
+  }
+
+  $scope.setRegisterFields();
 
 });
 </script>

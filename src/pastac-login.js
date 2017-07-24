@@ -13,8 +13,11 @@ angular.module('pastac-login', [])
     hideRegister: '<', // boolean
     hideForgot: '<', // boolean
     hideAvatar: '<', // boolean
+    hideLogout: '<', // boolean
     freshCredentials: '<', // boolean
-    registerWithPassword: '<', // boolean
+    registerFields: '<', // string (password,first_name,middle_name,last_name)
+    resume: '<', // URL
+    fail: '<', // URL
     facebook: '<', // boolean
     google: '<', // boolean
     github: '<', // boolean
@@ -27,29 +30,29 @@ angular.module('pastac-login', [])
     if ($attrs.template) {
       switch($attrs.template) {
         case 'navbar' :
-          console.log('pastac-login: using navbar template.');
+          //console.log('pastac-login: using navbar template.');
           t = '/bower_components/pastac-login/dist/pastac-login-navbar.html';
           break;
 
         case 'modal' :
-          console.log('pastac-login: using modal template.');
+          //console.log('pastac-login: using modal template.');
           t = '/bower_components/pastac-login/dist/pastac-login-modal.html';
           break;
 
         case 'page' :
-          console.log('pastac-login: using page template.');
+          //console.log('pastac-login: using page template.');
           t = '/bower_components/pastac-login/dist/pastac-login-page.html';
           break;
 
         default:
-          console.log('pastac-login: using custom template.');
+          //console.log('pastac-login: using custom template.');
           t = $attrs.template;
           break;
       }
     } else {
-      console.log('pastac-login: using default template.');
+      //console.log('pastac-login: using default template.');
     }
-    console.log('template=>' + t);
+    console.log('pastac-login: template: ' + t);
     return t;
   },
 
@@ -64,17 +67,22 @@ function PastacLoginController($scope, $timeout) {
   ctrl.$onInit = function() {
 
     // Set the initial mode
+    ctrl.active = true;
     ctrl.loggedIn = false;
     ctrl.mode = 'login';
     ctrl.setMode = function(mode) { ctrl.mode = mode; }
 
+    // Check our parameters
+    if (!ctrl.resume) {
+      console.log('pastac-login: Missing parameter: resume');
+      ctrl.active = false;
+    }
+    if (!ctrl.error) {
+      console.log('pastac-login: Missing parameter: error');
+      console.log('OAuth2 logins will be disabled');
+      ctrl.active = false;
+    }
     userHandler = ctrl.handler;
-
-
-    console.log('handler=', ctrl.handler);
-    console.log('ctrl.freshCredentials=', ctrl.freshCredentials);
-    console.log('ctrl.registerWithPassword=', ctrl.registerWithPassword);
-
 
     // Get the user details.
     authservice.init({
@@ -82,33 +90,52 @@ function PastacLoginController($scope, $timeout) {
       port: AUTHSERVICE_PORT,
       tenant: AUTHSERVICE_TENANT,
       pretend: AUTHSERVICE_USE_DUMMY_LOGIN,
-      registerWithPassword: ctrl.registerWithPassword,
       onUserChange: function(user, ttuat, stale) {
 
         // If the current user came from the cookie, reload it
         if (stale && ctrl.freshCredentials) {
-          console.log('Reloading stale user details (came from cookie)');
+          console.log('pastac-login: Reloading stale user details (came from cookie)');
           firstUser = false;
           return authservice.reloadUser();
         }
 
         // $timeout(function(){
         ctrl.user = user;
-        console.log('\nSETTING USER:', user);
+        console.log('pastac-login: setting user:', user);
         // });
 
         // Notify the page using this component of the change in user status
-        if (userHandler && userHandler.onUserChange) {
-          // ...but don't wait for the user function.
+        if (!ctrl.handler) {
+          console.log('pastac-login: NOT calling handler.onUserChange (handler not defined)');
+        } else if (!ctrl.handler.onUserChange) {
+          console.log('pastac-login: NOT calling handler.onUserChange (handler.onUserChange not defined)');
+        } else {
+          // Call the user handler
+          //console.log('pastac-login: calling handler.onUserChange');
           $timeout(function(){
-            userHandler.onUserChange(user, ttuat, stale);
-          }, 0);
-        }
+            ctrl.handler.onUserChange(user, ttuat, stale);
+          }, 1);
+        };
       }
     });
 
     ctrl.initiateOAuth2 = function(authority) {
-      authservice.initiateOAuth2(authority);
+
+      // See which URL we should use for errors in OAuth2 logins.
+      if (ctrl.error) {
+        var errorURL = ctrl.error;
+      } else {
+        var errorURL = '/bower_components/pastac-login/test/test-error.html';
+      }
+
+      // Initiate Authservice
+      var baseURL = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+      var options = {
+        authority: authority,
+        successURL: baseURL + ctrl.resume,
+        failURL: baseURL + ctrl.error
+      };
+      authservice.initiateOAuth2(options);
     }
 
 
@@ -119,8 +146,8 @@ function PastacLoginController($scope, $timeout) {
       authservice.login(ctrl.username, password, function(user) {
         ctrl.username = '';
         $('#pastac-login-modal').modal('hide')
+        $('#pastac-login-navbar-dropdown').dropdown('toggle')
       }, function(error) {
-        //alert('Could not login: ' + error)
         $timeout(function() {
           ctrl.loginError = error;
         }, 100);
@@ -138,18 +165,53 @@ function PastacLoginController($scope, $timeout) {
     ctrl.doRegister = function() {
 
       //ZZZZ Need a spinner
-      var email = ctrl.register_email;
-      var password = ctrl.register_password;
+
+      // Call the Authservice server
+      var baseURL = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+      var options = {
+        email: ctrl.register_email,
+        username: ctrl.register_email,
+        resume: baseURL + ctrl.resume
+      };
+      if (ctrl.registerWithField('password')) {
+        options.password = ctrl.register_password;
+      }
+      if (ctrl.registerWithField('first_name')) {
+        options.first_name = ctrl.register_first_name;
+      }
+      if (ctrl.registerWithField('middle_name')) {
+        options.middle_name = ctrl.register_middle_name;
+      }
+      if (ctrl.registerWithField('last_name')) {
+        options.last_name = ctrl.register_last_name;
+      }
       ctrl.register_password = '';
 
-
-      console.log('doRegister(' + email + ', ' + email + ', ' + password + ')');
-      authservice.register(email, email, password, function(user) {
-        alert('You have been Registered. Check your email.')
+      console.log('doRegister()', options);
+      authservice.register(options, function(user) {
+        ctrl.mode = 'login';
+        $('#pastac-login-navbar-dropdown').dropdown('toggle')
+        $('#pastac-login-modal').modal('hide')
+        $timeout(function () {
+          alert('You have been Registered. Please check your email.')
+        }, 10);
       }, function(error) {
-        alert('Could not login: ' + error)
+        alert('Could not register: ' + error)
       })
     }
+
+    ctrl.registerWithField = function(fieldname) {
+      if (ctrl.registerFields) {
+        var fields = ctrl.registerFields.split(',');
+        for (var i = 0; i < fields.length; i++) {
+          if (fields[i].trim() == fieldname) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
 
 
   };//- onInit
