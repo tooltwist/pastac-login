@@ -32,6 +32,14 @@ gulp.task('js', function() {
     ;
 });
 
+gulp.task('html', function() {
+    return gulp.src('src/*.html')
+    .pipe(debug({ title: 'html:', showFiles: false }))
+    .pipe(gulp.dest('dist'))
+    .pipe(browserSync.stream())
+    ;
+});
+
 gulp.task('minjs', function(cb) {
   pump([
         gulp.src('src/*.js'),
@@ -159,7 +167,7 @@ gulp.task('watch', function() {
   return gulp
     // Watch the input folder for change,
     // and run `sass` task when something happens
-    .watch('src/**/*.*', ['pug', 'sass', 'js', 'minjs'])
+    .watch('src/**/*.*', ['pug', 'html', 'sass', 'js', 'minjs'])
     // When there is a change,
     // log a message in the console
     .on('change', function(event) {
@@ -191,12 +199,12 @@ gulp.task('serve', function() {
       //reloadDelay: 200 // Give the server time to pick up the new files.
   });
   return gulp
-    .watch(['src/**/*.*', 'test/**/*.*'], ['testpage', 'pug', 'sass', 'js', 'minjs'])
+    .watch(['src/**/*.*', 'test/**/*.*'], ['testpage', 'pug', 'html', 'sass', 'js', 'minjs'])
 });
 
 gulp.task('docs', ['apidoc', 'sassdoc']);
 
-gulp.task('install', ['pug', 'sass', 'js', 'minjs', 'docs']);
+gulp.task('install', ['pug', 'html', 'sass', 'js', 'minjs', 'docs']);
 
 gulp.task('other-tasks-message', function(done) {
   console.log();
