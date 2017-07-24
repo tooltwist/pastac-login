@@ -1,6 +1,7 @@
-var authservice = (function() {
+var Authservice = (function() {
 
   var LOGIN_DETAILS_COOKIE_NAME = 'authservice-login-details';
+  var JWT_COOKIE_NAME = 'authservice-jwt';
   var LOGIN_TIMEOUT_DAYS = 3;
 
   // Authservice.io endpoint details
@@ -23,9 +24,6 @@ var authservice = (function() {
 
   // Are we simulating?
   var _pretend = false;
-
-  // Registration requires a password, before the email verification.
-  var _registerWithPassword = false;
 
   // User callbacks
   var _onUserChange = null;
@@ -154,7 +152,7 @@ console.log('*** Using Angular AJAX call');
 
       // We don't have Angular's $http, so use jQuery AJAX.
       // See http://api.jquery.com/jquery.ajax/
-console.log('*** Using jQuery AJAX call');
+console.log('*** jQuery AJAX call (before)');
       var json = JSON.stringify(params)
       $.ajax({
         url: url,
@@ -165,11 +163,13 @@ console.log('*** Using jQuery AJAX call');
         dataType: "json",
         contentType: 'application/json',
         success: function(response) {
+          console.log('*** jQuery AJAX call (success)');
 
           // Successful AJAX call.
           return successCallback(response);
         },
         error: function(jqxhr, textStatus, errorThrown) {
+          console.log('*** jQuery AJAX call (error)');
 
           // Error during AJAX call.
           var statusCode = jqxhr.status; // {number} – HTTP status code of the response.
@@ -207,21 +207,38 @@ console.log('*** Using jQuery AJAX call');
     // See if we have a AUTHSERVICE_JWT in the URL to this page
     var jwt = getURLParameterByName("AUTHSERVICE_JWT")
     if (jwt) {
-      //console.log("FOUND AUTHSERVICE_JWT IN URL.\n", jwt)
+      console.log("***");
+      console.log("***");
+      console.log("*** AUTHSERVICE_JWT IN URL")
+      console.log("***");
+      console.log("***");
       var isFromCookie = false;
-      setCurrentUserFromJWT(jwt, isFromCookie);
+      if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+      // Remember this JWT in a cookie for the next page.
+        setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
+      } else {
+        removeCookie(JWT_COOKIE_NAME);
+      }
       return;
     }
 
 
-
-    // See if we a cookie containing the current JWT
-    var jwt = getCookie(LOGIN_DETAILS_COOKIE_NAME);
+    // See if we have a cookie containing the current JWT
+    var jwt = getCookie(JWT_COOKIE_NAME);
     if (jwt) {
-      console.log("FOUND JWT IN A COOKIE.\n", jwt)
+      console.log("***");
+      console.log("***");
+      console.log("*** AUTHSERVICE_JWT IN A COOKIE")
+      console.log("***");
+      console.log("***");
       // var isFromCookie = true;
       var isFromCookie = false; // Check if it is stale ZZZZ
-      setCurrentUserFromJWT(jwt, isFromCookie);
+      if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+          // Good login from cookie
+      } else {
+        // Dud cookie
+        removeCookie(JWT_COOKIE_NAME);
+      }
       return;
     }
     // if (json) {
@@ -255,7 +272,12 @@ console.log('*** Using jQuery AJAX call');
     // }
 
     // not a good cookie
-    var isFromCookie = true;
+    console.log("***");
+    console.log("***");
+    console.log("*** AUTHSERVICE_JWT NOT IN URL OR COOKIE")
+    console.log("***");
+    console.log("***");
+    var isFromCookie = false;
     setCurrentUser(null, null, isFromCookie);
   }
 
@@ -278,9 +300,11 @@ console.log('*** Using jQuery AJAX call');
         },
         ttuat: _ttuat
       }
+      console.log('Setting ' + LOGIN_DETAILS_COOKIE_NAME + ' (not sure why)')
       setCookie(LOGIN_DETAILS_COOKIE_NAME, JSON.stringify(cookieObj), LOGIN_TIMEOUT_DAYS);
     } else {
       // Remove the cookie
+      console.log('Removing ' + LOGIN_DETAILS_COOKIE_NAME + ' (no current user)')
       setCookie(LOGIN_DETAILS_COOKIE_NAME, null, 0);
     }
   }
@@ -365,6 +389,9 @@ console.log('*** Using jQuery AJAX call');
     }
   }
 
+  // Set the current user from a JWT.
+  // Does not change cookies.
+  // Returns true on success.
   function setCurrentUserFromJWT(jwt, fromCookie) {
 
     //console.log();
@@ -396,19 +423,23 @@ console.log('*** Using jQuery AJAX call');
       var user = {
         authority: ident.authority,
         avatar: ident.avatar,
+        email: ident.email,
+        entityType: ident.entity_type,
         firstname: ident.first_name,
         fullname: ident.full_name,
         gender: ident.gender,
         id: ident.id,
+        isAdmin: ident.is_admin,
         languages: ident.languages,
         lastname: ident.last_name,
         locale: ident.locale,
         location: ident.location,
         mediaPage: ident.media_page,
         middlename: ident.middle_name,
+        privileges: ident.privileges,
         status: ident.status,
         timezone: ident.timezone,
-        type: ident.type,
+        // type: ident.type,
       };
 
       console.log('Setting _currentUser to ', user);
@@ -417,15 +448,13 @@ console.log('*** Using jQuery AJAX call');
       _ttuat = jwt;
       _jwt = jwt;
 
-      // Remember this JWT in a cookie
-      setCookie(LOGIN_DETAILS_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
-
+      // Enable and display the UI
       $('.authservice-logged-in').show();
       $('.authservice-logged-out').hide();
       $('.authservice-current-user-firstname').text(user.firstname);
       $('.authservice-current-user-lastname').text(user.lastname);
 
-      if(user.avatar) {
+      if (user.avatar) {
         $('.authservice-current-user-avatar').attr('src', user.avatar).show();
         $('.authservice-default-user-avatar').attr('src', user.avatar).hide();
       } else {
@@ -439,6 +468,8 @@ console.log('*** Using jQuery AJAX call');
         var newTtuat = _ttuat;
         (_onUserChange)(newUser, newTtuat, fromCookie);
       }
+      return true;
+
     } else {
 
       // No longer logged in
@@ -448,6 +479,7 @@ console.log('*** Using jQuery AJAX call');
       _jwt = null;
 
       // Remove the cookie
+      console.log('Removing ' + LOGIN_DETAILS_COOKIE_NAME + ' (not sure why)')
       setCookie(LOGIN_DETAILS_COOKIE_NAME, null, 0);
 
       $('.authservice-logged-in').hide();
@@ -459,6 +491,8 @@ console.log('*** Using jQuery AJAX call');
         var fromCookie = false;
         _onUserChange(null, null, fromCookie);
       }
+
+      return false;
     }
   }
 
@@ -468,12 +502,18 @@ console.log('*** Using jQuery AJAX call');
   *  Set a cookie in the browser, for the entire site.
   */
   function setCookie(cname, cvalue, exdays) {
-    console.log('setCookie(' + cname + ', ' + cvalue + ')');
+    // console.log('setCookie(' + cname + ', ' + cvalue + ')');
+    console.log('setCookie(' + cname + ')');
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     var expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }// setCookie()
+
+  function removeCookie(cname) {
+    console.log('removeCookie(' + cname + ')');
+    setCookie(cname, null, 0);
+  }
 
 
   /*
@@ -587,9 +627,6 @@ console.log('*** Using jQuery AJAX call');
 
       // In pretend mode, we use hard coded usernames
       _pretend = (options.pretend) ? true : false;
-
-      // Option to set the password before the email verification
-      _registerWithPassword = (options.registerWithPassword) ? true : false;
 
       // See if we are currently logged in, based on the browser cookie.
       setCurrentUserFromCookie();
@@ -706,6 +743,7 @@ console.log('*** Using jQuery AJAX call');
 
 
     login: function login(username, password, successCallback, failCallback) {
+      console.log('authservice.login(username=' + username + ')');
 
       // If we are pretending, get the user details now.
       if (_pretend) {
@@ -727,6 +765,7 @@ console.log('*** Using jQuery AJAX call');
         password: password
       };
       authservice_ajax_call('POST', '/login', params, function(response) {
+        console.log('authservice.login() back from AJAX call with', response);
 
           if (response.status == 'ok') {
 
@@ -735,15 +774,26 @@ console.log('*** Using jQuery AJAX call');
             // var user = convertIdentityToUser(response.identity);
             var jwt = response.jwt;
             var isFromCookie = false;
-            setCurrentUserFromJWT(jwt, isFromCookie);
+            if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+              // Good login
+              setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
+            } else {
+              // Bad login
+              removeCookie(JWT_COOKIE_NAME);
+            }
             if (successCallback) {
               return successCallback(_currentUser);
             }
           } else {
+
+            // We did not sucessfully login
             // Display an error message
             //$('#authservice-login-errmsg').show();
+            var errmess = response.message;
             if (failCallback) {
               return failCallback(response.message);
+            } else {
+              alert('Login error:' + errmess)
             }
           }
       }, function(statusCode, statusText, error) {
@@ -756,6 +806,7 @@ console.log('*** Using jQuery AJAX call');
 
 
     reloadUser: function reloadUser(callback) {
+      alert('authservice.reloadUser()')
       console.log('reloadUser');
 
       // See if there is a current user.
@@ -939,14 +990,23 @@ console.log('*** Using jQuery AJAX call');
   function logout() {
     //alert('authservice.logout()')
     var isFromCookie = false;
+    removeCookie(JWT_COOKIE_NAME);
     setCurrentUser(null, null, isFromCookie);
     authservice.resetLoginMenu();
     return false;
   }
 
 
-  register: function register(email, username, password, successCallback, failCallback) {
+  register: function register(options, successCallback, failCallback) {
     //alert('register()')
+    var email = options.email;
+    var username = options.username;
+    var password = options.password;
+    var first_name = options.first_name;
+    var middle_name = options.middle_name;
+    var last_name = options.last_name;
+    var resume = options.resume;
+
     // If we are pretending, get the user details now.
     if (_pretend) {
       console.log('seems we are pretending')
@@ -963,13 +1023,31 @@ console.log('*** Using jQuery AJAX call');
     }
     var params = {
       email: email,
-      username: email
+      username: email,
+      resume: resume
     };
-    if (_registerWithPassword) {
-      if (password==null || password.length < 5) {
+    if (password) {
+      if (password.length < 5) {
         return failCallback('Please enter a longer password');
       }
       params.password = password;
+    }
+    if (first_name) {
+      if (first_name.length < 5) {
+        return failCallback('Please enter a first name');
+      }
+      params.first_name = first_name;
+    }
+    if (middle_name) {
+      if (middle_name.length > 0) {
+        params.middle_name = middle_name;
+      }
+    }
+    if (last_name) {
+      if (last_name.length < 1) {
+        return failCallback('Please enter a last name');
+      }
+      params.last_name = last_name;
     }
 
     // Call the server
@@ -977,19 +1055,17 @@ console.log('*** Using jQuery AJAX call');
     authservice_ajax_call('POST', '/email/register', params, function(response) {
       console.log('response is ', response)
 
-        if (response.status == 'ok') {
-
-          // Logged in.
-          console.log('Back from register:', response);
-
+        if (response && response.status == 'ok') {
+          // Look successful
           if (successCallback) {
             return successCallback();
           }
         } else {
           // Display an error message
           //$('#authservice-login-errmsg').show();
+          var err = (response && response.message) ? response.message : 'Error while registering';
           if (failCallback) {
-            return failCallback(response.error);
+            return failCallback(err);
           }
         }
     });
@@ -1018,6 +1094,7 @@ console.log('*** Using jQuery AJAX call');
 
 })(); // authservice
 
+var authservice = Authservice;
 
 //tta2.init('http://localhost:9090', 'nodeclient');
 //tta2.init('http://127.0.0.1:9090', 'nodeclient');
