@@ -10,19 +10,26 @@ angular.module('pastac-login', [])
     // Bind parameters from the HTML element that invokes this
     // See https://docs.angularjs.org/guide/component
     handler: '=', // struct with callbacks
+    template: '<' // as-is string
+    freshCredentials: '<', // boolean, don't use JWT from cookie
+
+    // UI-related
+    signin: '<', // boolean
     hideRegister: '<', // boolean
     hideForgot: '<', // boolean
     hideAvatar: '<', // boolean
     hideLogout: '<', // boolean
-    freshCredentials: '<', // boolean
+
+    // Registration-related
     registerFields: '<', // string (password,first_name,middle_name,last_name)
-    resume: '<', // URL
-    fail: '<', // URL
+    registerResume: '<', // URL - where to go after email verification
+
+    // OAuth2-related
     facebook: '<', // boolean
     google: '<', // boolean
     github: '<', // boolean
-    signin: '<', // boolean
-    template: '<' // as-is string
+    resume: '<', // URL, where to go after OAuth2 login
+    fail: '<', // URL, where to go after OAuth2 error
   },
 
   templateUrl: function($element, $attrs) {
@@ -67,21 +74,9 @@ function PastacLoginController($scope, $timeout) {
   ctrl.$onInit = function() {
 
     // Set the initial mode
-    ctrl.active = true;
     ctrl.loggedIn = false;
     ctrl.mode = 'login';
     ctrl.setMode = function(mode) { ctrl.mode = mode; }
-
-    // Check our parameters
-    if (!ctrl.resume) {
-      console.log('pastac-login: Missing parameter: resume');
-      ctrl.active = false;
-    }
-    if (!ctrl.error) {
-      console.log('pastac-login: Missing parameter: error');
-      console.log('OAuth2 logins will be disabled');
-      ctrl.active = false;
-    }
     userHandler = ctrl.handler;
 
     // Get the user details.
@@ -120,6 +115,10 @@ function PastacLoginController($scope, $timeout) {
     });
 
     ctrl.initiateOAuth2 = function(authority) {
+      if (!ctrl.resume) {
+        alert('pastac-login: Missing parameter: resume\nOAuth2 logins are disabled.');
+        return;
+      }
 
       // See which URL we should use for errors in OAuth2 logins.
       if (ctrl.error) {
@@ -163,6 +162,10 @@ function PastacLoginController($scope, $timeout) {
 
 
     ctrl.doRegister = function() {
+      if (!ctrl.registerResume) {
+        alert('pastac-login: Missing parameter: registerResume\nEmail registration is disabled.');
+        return;
+      }
 
       //ZZZZ Need a spinner
 
@@ -171,7 +174,7 @@ function PastacLoginController($scope, $timeout) {
       var options = {
         email: ctrl.register_email,
         username: ctrl.register_email,
-        resume: baseURL + ctrl.resume
+        resume: baseURL + ctrl.registerResume
       };
       if (ctrl.registerWithField('password')) {
         options.password = ctrl.register_password;

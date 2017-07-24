@@ -108,7 +108,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL"></pastac-login>
+              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL" register-resume="registerResumeURL"></pastac-login>
             </li>
           </ul>
         </div>
@@ -158,7 +158,8 @@
         github="true"</span><span ng-if="registerPassword || registerDetails">
         register-fields="{{registerFields}}"</span>
         error="{{errorURL}}"
-        resume="{{resumeURL}}"&gt;
+        resume="{{resumeURL}}"
+        register-resume="{{registerResumeURL}}"&gt;
 &lt;/pastac-login&gt;</pre>
         <br/>
 
@@ -172,7 +173,7 @@
         > google="true"</span><span ng-if="useGithub"
         > github="true"</span><span ng-if="registerPassword || registerDetails"
         > register-fields="first_name,middle_name,last_name"</span
-        > error="{{errorURL}}" resume="{{resumeURL}}")</pre>
+        > error="{{errorURL}}" resume="{{resumeURL}}") register-resume="{{registerResumeURL}}"</pre>
 
       <hr/>
       <h4>External scope</h4>
@@ -218,7 +219,7 @@ module.controller('myCtrl', function($scope, $timeout) {
   $scope.registerPassword = false;
   $scope.registerDetails = false;
   $scope.errorURL = '/bower_components/pastac-login/test/test-error.html';
-  $scope.resumeURL = 'zzz';
+  $scope.resumeURL = '/bower_components/pastac-login/test/test-navbar.html';
 
   $scope.authserviceConfig = {
     host: AUTHSERVICE_HOST,
@@ -238,7 +239,7 @@ module.controller('myCtrl', function($scope, $timeout) {
     var sep = '';
     var fields = '';
     // var resumeURL = '/bower_components/pastac-login/test/test-welcome.html';
-    var resumeURL = '/bower_components/pastac-login/test/test-welcome-details.html';
+    var registerResumeURL = '/bower_components/pastac-login/test/test-welcome-details.html';
     if ($scope.registerPassword) {
       fields += sep + 'password';
       sep = ',';
@@ -246,10 +247,10 @@ module.controller('myCtrl', function($scope, $timeout) {
     if ($scope.registerDetails) {
       fields += sep + 'first_name,middle_name,last_name';
       sep = ',';
-      resumeURL = '/bower_components/pastac-login/test/test-navbar.html';
+      registerResumeURL = '/bower_components/pastac-login/test/test-welcome.html';
     }
     $scope.registerFields = fields;
-    $scope.resumeURL = resumeURL;
+    $scope.registerResumeURL = registerResumeURL;
   }
 
   $scope.setRegisterFields();

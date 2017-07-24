@@ -83,10 +83,16 @@ block content
                   form(name='myEmailForm')
                   input.form-control(type='email', placeholder='Enter your email address', ng-model="ctrl.register_email")
                   br
-                  div(ng-hide="!ctrl.registerWithPassword")
-                    input.form-control(type='password', ng-hide="!ctrl.registerWithPassword", placeholder='Enter your new password', ng-model="ctrl.register_password")
+                  div(ng-hide="!ctrl.registerPassword")
+                    input.form-control(type='password', ng-hide="!ctrl.registerPassword", placeholder='Enter your new password', ng-model="ctrl.register_password")
                     br
-                  span(class="error") 
+                  div(ng-hide="false && !ctrl.registerFirstName")
+                    input.form-control(type='text', ng-hide="!ctrl.registerPassword", placeholder='Enter your first name', ng-model="ctrl.register_first_name")
+                    br
+                  div(ng-hide="false && !ctrl.registerLastName")
+                    input.form-control(type='text', ng-hide="!ctrl.registerPassword", placeholder='Enter your last name', ng-model="ctrl.register_last_name")
+                    br
+                  span(class="error")
                   //- p.text-center Enter a valid email address.
                 //- form-group
                 a.jjj-btn.green.block(href='', data-toggle='modal', data-dismiss='modal', ng-click="ctrl.doRegister()") Continue
