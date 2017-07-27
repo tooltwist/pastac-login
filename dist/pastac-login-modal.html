@@ -1,0 +1,63 @@
+
+<div class="modal fade" id="pastac-login-modal" tabindex="-1" role="dialog" aria-labelledby="modalMemberLoginLabel">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header signup-email">
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span><img src="assets/images/icon-close.png"></button>
+        <p><a class="link" href="">Need Help?</a></p>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 col-sm-8 col-md-offset-3 col-sm-offset-2">
+            <h2 class="text-center">Welcome Back!</h2>
+            <p class="text-center">Please enter your password below to sign in.</p><br>
+            <div class="form-group">
+              <input class="form-control" type="text" ng-model="ctrl.username" placeholder="Enter your email address">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="password" ng-model="ctrl.password" placeholder="Enter your Password">
+            </div>
+            <div class="alert alert-danger" ng-hide="!ctrl.loginError" role="alert" Zstyle="display:none;"><span class="glyphicon glyphicon-exclamation-sign icon-center aria-hidden"></span>{{ctrl.loginError}}</div><a class="jjj-btn green block" href="" ng-click="ctrl.doEmailSignin()">Continue</a>
+            <p class="or">or</p><a class="jjj-btn fb block" ng-click="ctrl.initiateOAuth2('facebook')"><i class="fa fa-facebook"></i>&nbsp;Login with Facebook</a>
+            <p></p><a class="jjj-btn gplus block" ng-click="ctrl.initiateOAuth2('google')"><i class="fa fa-google-plus"></i>&nbsp;Login with Google +</a>
+          </div>
+        </div>
+        <div class="clearfix"><br></div><a class="jjj-btn link block" href="#pastac-signup-modal" data-toggle="modal" data-dismiss="modal">Sign up with your email</a><br>
+        <p class="text-center">Forgot your password?&nbsp;<a class="link green" href="" data-toggle="modal" data-dismiss="modal" id="authservice-reset-password">Reset it.</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="pastac-signup-modal" tabindex="-1" role="dialog" aria-labelledby="modalSignupEmailLabel">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header signup-email">
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span><img src="assets/images/icon-close.png"></button>
+        <p><a class="link" href="">Need Help?</a></p>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-8 col-sm-offset-2">
+            <div class="logo text">JinJerJade</div>
+            <p class="text-center">Please sign in below, or sign up using your email or social account.</p><br>
+            <div class="form-group">
+              <form name="myEmailForm"></form>
+              <input class="form-control" type="email" placeholder="Enter your email address" ng-model="ctrl.register_email"><br>
+              <div ng-hide="!ctrl.registerPassword">
+                <input class="form-control" type="password" ng-hide="!ctrl.registerPassword" placeholder="Enter your new password" ng-model="ctrl.register_password"><br>
+              </div>
+              <div ng-hide="false &amp;&amp; !ctrl.registerFirstName">
+                <input class="form-control" type="text" ng-hide="!ctrl.registerPassword" placeholder="Enter your first name" ng-model="ctrl.register_first_name"><br>
+              </div>
+              <div ng-hide="false &amp;&amp; !ctrl.registerLastName">
+                <input class="form-control" type="text" ng-hide="!ctrl.registerPassword" placeholder="Enter your last name" ng-model="ctrl.register_last_name"><br>
+              </div><span class="error"></span>
+            </div><a class="jjj-btn green block" href="" data-toggle="modal" data-dismiss="modal" ng-click="ctrl.doRegister()">Continue</a>
+            <p class="or">or continue with</p><a class="jjj-btn fb block" ng-click="ctrl.initiateOAuth2('facebook')"><i class="fa fa-facebook"></i>&nbsp;Login with Facebook</a>
+            <p></p><a class="jjj-btn gplus block" ng-click="ctrl.initiateOAuth2('google')"><i class="fa fa-google-plus"></i>&nbsp;Login with Google +</a>
+          </div>
+        </div><br>
+      </div>
+    </div>
+  </div>
+</div>

@@ -179,8 +179,7 @@ block content
       span(ng-hide="ctrl.user.avatar").fa-stack.fa
         i.fa.fa-circle.fa-stack-2x
         i.fa.fa-user.fa-stack-1x.fa-inverse
-      | &nbsp;Hi {{ctrl.user.firstname}}
-      | !
+      | &nbsp;{{ctrl.user.firstname}}
       
     ul.dropdown-menu(ng-hide="ctrl.hideLogout || !ctrl.user", role="menu" aria-labelledby="signed-out-menu-button")
       //- li.divider(role='separator')

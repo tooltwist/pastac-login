@@ -1,0 +1,22 @@
+block content
+
+    //
+    //
+    //  SECTION FOR WHEN **NOT** SIGNED IN
+    //
+    //
+    a.dropdown-toggle.info#pastac-login-navbar-dropdown(ng-hide="ctrl.user")
+
+
+
+    //
+    //
+    //  SECTION FOR WHEN WE **ARE** SIGNED IN
+    //
+    //
+    a.dropdown-toggle.info(ng-hide="ctrl.hideLogout || !ctrl.user" ng-cloak)
+      img.pastac-login-navbar-avatar(ng-hide="!ctrl.user.avatar" ng-src="{{ctrl.user.avatar}}", alt="")
+      span(ng-hide="ctrl.user.avatar").fa-stack.fa
+        i.fa.fa-circle.fa-stack-2x
+        i.fa.fa-user.fa-stack-1x.fa-inverse
+      | &nbsp;{{ctrl.user.firstname}}

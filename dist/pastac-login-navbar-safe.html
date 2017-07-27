@@ -1,0 +1,114 @@
+
+<!---->
+<!---->
+<!--            Content when NOT logged in-->
+<!---->
+<!---->
+<!--ul(Zstyle="display:none;").nav.navbar-nav.navbar-right.authservice-logged-in.hide.DWS
+//- li
+//-   a.cart-icon.text-center(href='/shopping-cart.html')
+//-     i.fa.fa-shopping-bag
+//-   //- a
+//- //- li
+-->
+<div>
+  <!--.WWform.WWnavbar-form.WWnavbar-right.WWtext-center-->
+  <!--div-->
+  <div class="btn-groupWW navWW navbar-navWW navbar-rightWW WWauthservice-logged-out"><a class="navbar-nav dropdown-toggle infoZZ" href="" ng-hide="ctrl.loggedIn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <div class="glyphicon glyphicon-log-in"><span></span></div>&nbsp; Login</a>
+    <ul class="dropdown-menu">
+      <!-- LOGIN-->
+      <li>
+        <!--a(id="authservice-login-button" href="#") Login-->
+        <div id="authservice-login-div">
+          <form>
+            <div class="form-group">
+              <label>Username</label>
+              <input class="form-control" type="email" id="authservice-login-username">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input class="form-control" type="password" id="authservice-login-password">
+            </div>
+            <button class="btn btn-success btn-block" type="submit" id="authservice-login-submit" onclick="return false;">Sign in</button>
+            <p></p>
+            <div class="text-center"><small><a href="">Forgot password?</a></small></div>
+          </form>
+          <div class="alert alert-danger" id="authservice-login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign aria-hidden"></span><span class="sr-only">Error:</span>Invalid email / password</div>
+        </div>
+      </li>
+      <!-- FORGOT PASSWORD-->
+      <li class="authservice-loggedin-section"><a id="authservice-forgot-button" href="#">Forgot password</a>
+        <div id="authservice-forgot-div" style="display:none;">
+          <p>
+            Forgot your password? No problem. Enter your email address below and we'll
+            well send email with a link to reset your password.
+          </p>
+          <form>
+            <div class="form-group">
+              <input class="form-control" type="email" id="authservice-forgot-username" placeholder="Email">
+            </div>
+            <button class="btn btn-default" type="submit" id="authservice-forgot-submit">Send the email</button>
+            <button class="btn btn-default" type="submit" id="authservice-forgot-cancel">cancel</button>
+          </form>
+          <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>
+        </div>
+        <div id="authservice-forgot-done" style="display:none;">
+          <p>
+            We have sent an email to <div id="authservice-forgot-email2"></div> with
+            instructions to reset your password.
+          </p>
+          <button class="btn btn-default" type="submit" id="authservice-forgot-ok">ok</button>
+        </div>
+      </li>
+      <!-- REGISTER-->
+      <li class="authservice-loggedin-section"><a id="authservice-register-button" href="#">Register</a>
+        <div id="authservice-register-div" style="display:none;">
+          <form>
+            <p>
+              Hi!
+              Enter your email address and a password and we'll
+              be happy to sign you up.
+            </p>
+            <div class="form-group">
+              <input class="form-control" type="email" id="authservice-register-username" placeholder="Email">
+            </div>
+            <div class="form-group">
+              <input class="form-control" type="password" id="authservice-register-password" placeholder="Password">
+            </div>
+            <button class="btn btn-default" type="submit" id="authservice-register-submit">register</button>
+            <button class="btn btn-default" type="submit" id="authservice-register-cancel">cancel</button>
+          </form>
+          <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>
+        </div>
+        <div id="authservice-register-done" style="display:none;">
+          <p>
+            Congratulations, you now have a user account.
+            We have sent you an email to verify you email address.
+          </p>
+          <p>
+            Please take a moment to check your email and complete
+            the registration process.
+          </p>
+          <button class="btn btn-default" type="submit" id="authservice-register-ok">ok</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<!---->
+<!---->
+<!--            Content when logged in-->
+<!---->
+<!---->
+<!-- Menu if logged in.-->
+<ul class="nav navbar-nav navbar-right authservice-logged-in" Zstyle="display:none;">
+  <li class="dropdown"><a class="dropdown-toggle info" href="profile.html" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+      <!--img(style="display:none;" src="", alt="").authservice-current-user-avatar-->
+      <div class="glyphicon glyphicon-user"></div>&nbsp; {{ctrl.user.firstname}}</a>
+    <ul class="dropdown-menu">
+      <li class="divider" role="separator"></li>
+      <li><a id="authservice-logout-button" data-toggle="modal">Sign out</a></li>
+    </ul>
+  </li>
+</ul>

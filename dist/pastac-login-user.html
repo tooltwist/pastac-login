@@ -1,0 +1,11 @@
+
+<!---->
+<!---->
+<!--  SECTION FOR WHEN **NOT** SIGNED IN-->
+<!---->
+<!----><a class="dropdown-toggle info" id="pastac-login-navbar-dropdown" ng-hide="ctrl.user"></a>
+<!---->
+<!---->
+<!--  SECTION FOR WHEN WE **ARE** SIGNED IN-->
+<!---->
+<!----><a class="dropdown-toggle info" ng-hide="ctrl.hideLogout || !ctrl.user" ng-cloak><img class="pastac-login-navbar-avatar" ng-hide="!ctrl.user.avatar" ng-src="{{ctrl.user.avatar}}" alt=""><span class="fa-stack fa" ng-hide="ctrl.user.avatar"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-user fa-stack-1x fa-inverse"></i></span>&nbsp;{{ctrl.user.firstname}}</a>
