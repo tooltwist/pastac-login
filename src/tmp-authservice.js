@@ -407,6 +407,7 @@ console.log('*** jQuery AJAX call (before)');
         haveUser = true;
 
       } catch (e) {
+        console.log('Error decoding JWT: ', e)
         alert('Error decoding invalid JWT')
         haveUser = false;
       }
@@ -1057,6 +1058,9 @@ console.log('*** jQuery AJAX call (before)');
     console.log('params=', params);
     authservice_ajax_call('POST', '/email/register', params, function(response) {
       console.log('response is ', response)
+
+
+      //ZZZZZ Maybe this is consider logged in?
 
         if (response && response.status == 'ok') {
           // Look successful
