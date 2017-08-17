@@ -53,7 +53,7 @@
         </div>
       </li>
       <!-- REGISTER-->
-      <li class="authservice-loggedin-section"><a id="authservice-register-button" href="#">Register</a>
+      <li class="authservice-loggedin-section"><a id="authservice-register-button" href="#">RegisterZ</a>
         <div id="authservice-register-div" style="display:none;">
           <form>
             <p>
@@ -67,7 +67,9 @@
             <div class="form-group">
               <input class="form-control" type="password" id="authservice-register-password" placeholder="Password">
             </div>
-            <button class="btn btn-default" type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()">register</button>
+            <button class="btn btn-default" type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()">
+              <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.registerInProgress"></div>register
+            </button>
             <button class="btn btn-default" type="submit" id="authservice-register-cancel">cancel</button>
           </form>
           <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>
@@ -75,7 +77,7 @@
         <div id="authservice-register-done" style="display:none;">
           <p>
             Congratulations, you now have a user account.
-            We have sent you an email to verify you email address.
+            We have sent you an email to verify your email address.
           </p>
           <p>
             Please take a moment to check your email and complete

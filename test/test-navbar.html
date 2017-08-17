@@ -109,7 +109,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL" register-resume="registerResumeURL"></pastac-login>
+              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" login-with-username="usernameLogin" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL" register-resume="registerResumeURL"></pastac-login>
             </li>
           </ul>
         </div>
@@ -132,6 +132,8 @@
           <br/>
         </div>
         <div class="col-md-6">
+          <input type="checkbox" ng-model="usernameLogin"> May login using username
+          <br/>
           <input type="checkbox" ng-model="useFacebook"> Allow login using Facebook
           <br/>
           <input type="checkbox" ng-model="useGoogle"> Allow login using Google
@@ -153,7 +155,8 @@
         signin="true"</span><span ng-if="hideRegister">
         hide-register="true"</span><span ng-if="hideForgot">
         hide-forgot="true"</span><span ng-if="hideAvatar">
-        hide-avatar="true"</span><span ng-if="useFacebook">
+        hide-avatar="true"</span><span ng-if="usernameLogin">
+        login-with-username="true"</span><span ng-if="useFacebook">
         facebook="true"</span><span ng-if="useGoogle">
         google="true"</span><span ng-if="useGithub">
         github="true"</span><span ng-if="registerPassword || registerDetails">
@@ -169,7 +172,8 @@
         > signin="true"</span><span ng-if="hideRegister"
         > hide-register="true"</span><span ng-if="hideForgot"
         > hide-forgot="true"</span><span ng-if="hideAvatar"
-        > hide-avatar="true"</span><span ng-if="useFacebook"
+        > hide-avatar="true"</span><span ng-if="usernameLogin"
+        > login-with-username="true"</span><span ng-if="useFacebook"
         > facebook="true"</span><span ng-if="useGoogle"
         > google="true"</span><span ng-if="useGithub"
         > github="true"</span><span ng-if="registerPassword || registerDetails"
@@ -214,6 +218,7 @@ var module = angular.module('myApp', [ 'pastac-login' ]);
 module.controller('myCtrl', function($scope, $timeout) {
 
   $scope.hideAvatar = true;
+  $scope.usernameLogin = false;
   $scope.useFacebook = true;
   $scope.useGoogle = true;
   $scope.useGithub = true;
@@ -226,11 +231,12 @@ module.controller('myCtrl', function($scope, $timeout) {
     host: AUTHSERVICE_HOST,
     port: AUTHSERVICE_PORT,
     tenant: AUTHSERVICE_TENANT,
+    version: 'v2',
     dummyLogin: AUTHSERVICE_USE_DUMMY_LOGIN
   };
   $scope.userHandler = {
-    onUserChange: function(user, ttuat, stale) {
-      console.log('Wow, the user changed!', user);
+    onUserChange: function(user, ttuat, fromCookie) {
+      console.log('onUserChange():', user);
       $scope.currentUser = user;
       $scope.ttuat = ttuat;
     }

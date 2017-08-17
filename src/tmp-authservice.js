@@ -4,6 +4,9 @@ var Authservice = (function() {
   var JWT_COOKIE_NAME = 'authservice-jwt';
   var LOGIN_TIMEOUT_DAYS = 3;
 
+  var AUTHORIZED = true;
+  var NOT_AUTHORIZED = false;
+
   // Authservice.io endpoint details
   var _host;
   var _port;
@@ -27,6 +30,9 @@ var Authservice = (function() {
 
   // User callbacks
   var _onUserChange = null;
+
+  // Use jQuery to manipulate the DOM, rather than Angular
+  var _bindToDOM = false;
 
 
   var dummyUserBob =  {
@@ -94,13 +100,18 @@ var Authservice = (function() {
   /*
    *  Perform an AJAX, using jQuery or Angular if available.
    */
-  function authservice_ajax_call(method, urlpath, params, successCallback/*(response)*/, errorCallback/*(statusCode, statusText, error)*/) {
+  function authservice_ajax_call(method, urlpath, params, withAuthorizedHeader, successCallback/*(response)*/, errorCallback/*(statusCode, statusText, responseJSON)*/) {
 
     var url = ENDPOINT + urlpath;
     console.log('authservice_ajax_call(method, ' + urlpath + ')')
     console.log(url)
     console.log(params);
     console.log("vvvvvv calling vvvvvv");
+    if (errorCallback) {
+      console.log('------- have errorCallback')
+    } else {
+      console.log('------- no errorCallback')
+    }
 
     // See if this is an Angular AJAX call
     if (_$http) {
@@ -118,10 +129,17 @@ var Authservice = (function() {
        */
 console.log('*** Using Angular AJAX call');
       var req = {
-        method: 'POST',
+        method: method,
         url: url,
         data: params
       };
+
+      if (withAuthorizedHeader) {
+        req.headers = {
+          'Authorization' : 'Bearer XYZ'
+        };
+      }
+
       _$http(req).then(function(response) { // success handler
 
         // Successful AJAX call.
@@ -134,9 +152,10 @@ console.log('*** Using Angular AJAX call');
         // Error during API call.
         var statusCode = response.status; // {number} – HTTP status code of the response.
         var statusText = response.statusText; // {string} – HTTP status text of the response.
-        var error = response.data; // Maybe an error object was returned.
+        // var error = response.data; // Maybe an error object was returned.
+        var responseJSON = response.data; // Maybe an error object was returned.
         if (errorCallback) {
-          return errorCallback(statusCode, statusText, error);
+          return errorCallback(statusCode, statusText, responseJSON);
         }
 
         // We have no error callback, so we'll report the error here and return null data.
@@ -153,38 +172,45 @@ console.log('*** Using Angular AJAX call');
       // We don't have Angular's $http, so use jQuery AJAX.
       // See http://api.jquery.com/jquery.ajax/
 console.log('*** jQuery AJAX call (before)');
+      var headers = { };
+      if (withAuthorizedHeader) {
+        headers.Authorization = 'Bearer XYZ';
+      }
+
       var json = JSON.stringify(params)
       $.ajax({
         url: url,
-        type: "POST", // Using CORS
+        type: method, // Using CORS
         crossDomain: true,
         async: true,
         data: json,
         dataType: "json",
+        headers: headers,
         contentType: 'application/json',
         success: function(response) {
-          console.log('*** jQuery AJAX call (success)');
+          console.log('*** jQuery AJAX call (success)', response);
 
           // Successful AJAX call.
           return successCallback(response);
         },
         error: function(jqxhr, textStatus, errorThrown) {
-          console.log('*** jQuery AJAX call (error)');
+          console.log('*** jQuery AJAX call (error)', jqxhr, textStatus, errorThrown);
 
           // Error during AJAX call.
           var statusCode = jqxhr.status; // {number} – HTTP status code of the response.
           var statusText = jqxhr.statusText; // {string} null, "timeout", "error", "abort", or "parsererror"
-          var error = errorThrown; // {string} "When an HTTP error occurs, errorThrown receives the textual portion of the HTTP status."
+          var responseJSON =  jqxhr.responseJSON;
+          // var error = errorThrown; // {string} "When an HTTP error occurs, errorThrown receives the textual portion of the HTTP status."
           if (errorCallback) {
-            return errorCallback(statusCode, statusText, error);
+            return errorCallback(statusCode, statusText, responseJSON);
           }
 
           // We have no error callback, so we'll report the error here and return null data.
           alert('An error occurred contacting Authservice.\nSee the Javascript console for details.')
           console.log('statusCode:', statusCode)
           console.log('statusText:', statusText)
-          console.log('error:', error)
-          return successCallback(null);
+          console.log('responseJSON:', responseJSON)
+          // return successCallback(null);
         }
       });
     }
@@ -350,18 +376,21 @@ console.log('*** jQuery AJAX call (before)');
       }
 
       setCookieFromCurrentUser();
-      $('.authservice-logged-in').show();
-      $('.authservice-logged-out').hide();
-      $('.authservice-current-user-firstname').text(user.firstname);
-      $('.authservice-current-user-lastname').text(user.lastname);
 
-      if(user.avatar) {
-        $('.authservice-current-user-avatar').attr('src', user.avatar).show();
-        $('.authservice-default-user-avatar').attr('src', user.avatar).hide();
-      } else {
-        $('.authservice-current-user-avatar').attr('src', user.avatar).hide();
-        $('.authservice-default-user-avatar').attr('src', user.avatar).show();
-      }
+      if (_bindToDOM) {
+        $('.authservice-logged-in').show();
+        $('.authservice-logged-out').hide();
+        $('.authservice-current-user-firstname').text(user.firstname);
+        $('.authservice-current-user-lastname').text(user.lastname);
+
+        if(user.avatar) {
+          $('.authservice-current-user-avatar').attr('src', user.avatar).show();
+          $('.authservice-default-user-avatar').attr('src', user.avatar).hide();
+        } else {
+          $('.authservice-current-user-avatar').attr('src', user.avatar).hide();
+          $('.authservice-default-user-avatar').attr('src', user.avatar).show();
+        }
+      }//- _bindToDOM
 
       if (_onUserChange) { // && oldCurrentUser==null) {
 
@@ -376,12 +405,15 @@ console.log('*** jQuery AJAX call (before)');
       _currentEntityId = -1;
       _ttuat = null;
       setCookieFromCurrentUser();
-      //setCookie(LOGIN_DETAILS_COOKIE_NAME, null, LOGIN_TIMEOUT_DAYS);
-      $('.authservice-logged-in').hide();
-      $('.authservice-logged-out').show();
-      $('.authservice-current-user-firstname').text('');
-      $('.authservice-current-user-lastname').text('');
-      $('.authservice-current-user-avatar').attr('src', '').hide();
+
+      if (_bindToDOM) {
+        $('.authservice-logged-in').hide();
+        $('.authservice-logged-out').show();
+        $('.authservice-current-user-firstname').text('');
+        $('.authservice-current-user-lastname').text('');
+        $('.authservice-current-user-avatar').attr('src', '').hide();
+      }//- _bindToDOM
+
       if (_onUserChange) { // && oldCurrentUser != null) {
         var fromCookie = false;
         _onUserChange(null, null, fromCookie);
@@ -450,18 +482,20 @@ console.log('*** jQuery AJAX call (before)');
       _jwt = jwt;
 
       // Enable and display the UI
-      $('.authservice-logged-in').show();
-      $('.authservice-logged-out').hide();
-      $('.authservice-current-user-firstname').text(user.firstname);
-      $('.authservice-current-user-lastname').text(user.lastname);
+      if (_bindToDOM) {
+        $('.authservice-logged-in').show();
+        $('.authservice-logged-out').hide();
+        $('.authservice-current-user-firstname').text(user.firstname);
+        $('.authservice-current-user-lastname').text(user.lastname);
 
-      if (user.avatar) {
-        $('.authservice-current-user-avatar').attr('src', user.avatar).show();
-        $('.authservice-default-user-avatar').attr('src', user.avatar).hide();
-      } else {
-        $('.authservice-current-user-avatar').attr('src', user.avatar).hide();
-        $('.authservice-default-user-avatar').attr('src', user.avatar).show();
-      }
+        if (user.avatar) {
+          $('.authservice-current-user-avatar').attr('src', user.avatar).show();
+          $('.authservice-default-user-avatar').attr('src', user.avatar).hide();
+        } else {
+          $('.authservice-current-user-avatar').attr('src', user.avatar).hide();
+          $('.authservice-default-user-avatar').attr('src', user.avatar).show();
+        }
+      }//- _bindToDOM
 
       if (_onUserChange) { // && oldCurrentUser==null) {
 
@@ -483,11 +517,14 @@ console.log('*** jQuery AJAX call (before)');
       console.log('Removing ' + LOGIN_DETAILS_COOKIE_NAME + ' (not sure why)')
       setCookie(LOGIN_DETAILS_COOKIE_NAME, null, 0);
 
-      $('.authservice-logged-in').hide();
-      $('.authservice-logged-out').show();
-      $('.authservice-current-user-firstname').text('');
-      $('.authservice-current-user-lastname').text('');
-      $('.authservice-current-user-avatar').attr('src', '').hide();
+      if (_bindToDOM) {
+        $('.authservice-logged-in').hide();
+        $('.authservice-logged-out').show();
+        $('.authservice-current-user-firstname').text('');
+        $('.authservice-current-user-lastname').text('');
+        $('.authservice-current-user-avatar').attr('src', '').hide();
+      }//- _bindToDOM
+
       if (_onUserChange) { // && oldCurrentUser != null) {
         var fromCookie = false;
         _onUserChange(null, null, fromCookie);
@@ -589,13 +626,17 @@ console.log('*** jQuery AJAX call (before)');
   ***/
   return {
 
+    login: login,
+    usernameAvailability: usernameAvailability,
     register: register,
+    forgot: forgot,
     logout: logout,
+    updateUser: updateUser,
     setCookie: setCookie,
     getCookie: getCookie,
     getCurrentUser: getCurrentUser,
     getCurrentUserId: getCurrentUserId,
-    getUserAccessToken: getUserAccessToken,
+    getUserAccessToken: getUserAccessToken,//ZZZZ ?
     initiateOAuth2: initiateOAuth2,
     bounce: bounce,
     bounceURL: bounceURL,
@@ -615,17 +656,19 @@ console.log('*** jQuery AJAX call (before)');
       */
       _host = options.host ? options.host : 'authservice.io';
       _port = options.port ? options.port : 80;
-      _version = options.version ? options.version : 'v1';
+      _version = options.version ? options.version : 'v2';
       _apikey = options.tenant;
-      //host = 'http://' + _host + ':' + _port + '/' + _version + '/' + _apikey;
       ENDPOINT = '//' + _host + ':' + _port + '/' + _version + '/' + _apikey;
-      //console.log('endpoint = ' + ENDPOINT);
+      console.log('endpoint = ' + ENDPOINT);
 
       if (options.$http) {
         _$http = options.$http;
       }
       if (options.onUserChange) {
         _onUserChange = options.onUserChange;
+      }
+      if (options.bindToDOM) {
+        _bindToDOM = options.bindToDOM;
       }
 
 
@@ -635,178 +678,115 @@ console.log('*** jQuery AJAX call (before)');
       // See if we are currently logged in, based on the browser cookie.
       setCurrentUserFromCookie();
 
-
-      /*
-       *  Set up nice callbacks for buttons, etc.
-       */
-      $('#authservice-login-button').click(function(){
-        $('#authservice-login-div').show();
-        $('#authservice-forgot-div').hide();
-        $('#authservice-register-div').hide();
-        return false;
-      });
-
-
-      $('#authservice-forgot-button').click(function(){
-        $('#authservice-login-button').hide();
-        $('#authservice-login-div').hide();
-        $('#authservice-forgot-div').show();
-        $('#authservice-register-button').hide();
-        $('#authservice-register-div').hide();
-        return false;
-      });
-
-
-
-      $('#authservice-register-button').click(function(){
-        $('#authservice-login-button').hide();
-        $('#authservice-login-div').hide();
-        $('#authservice-forgot-button').hide();
-        $('#authservice-forgot-div').hide();
-        $('#authservice-register-div').show();
-        return false;
-      });
-
-
-
-      $('#authservice-forgot-cancel').click(authservice.resetLoginMenu);
-      $('#authservice-forgot-ok').click(authservice.resetLoginMenu);
-      $('#authservice-register-cancel').click(authservice.resetLoginMenu);
-      $('#authservice-register-ok').click(authservice.resetLoginMenu);
-
-
-
-      $('#authservice-logout-button').click(function(){
-        authservice.logout();
-      });
-
-
-
-
-      $('#authservice-login-submit').click(function() {
-         var username = $('#authservice-login-username').val();
-         var password = $('#authservice-login-password').val();
-         //				alert('login(' + username + ', ' + password + ')');
-
-         authservice.login(username, password, function(user){
-           // Success
-           authservice.resetLoginMenu();
-         }, function() {
-           // Fail
-           $('#authservice-login-errmsg').show();
-         })
-
-      });
-
-
-      $('#authservice-forgot-submit').click(function() {
-        var username = $('#authservice-forgot-username').val();
-        alert('forgot(' + username + ')');
-
-        var success = false;
-        if (username == 'ok') success = true;
-        if (success) {
-          // Forward to some other page, or redraw this page
-          $('#authservice-forgot-email2').val(username); // redisplay the email
-          $('#authservice-forgot-button').hide();
+      if (_bindToDOM) {
+        /*
+         *  Set up nice callbacks for buttons, etc.
+         */
+        $('#authservice-login-button').click(function(){
+          $('#authservice-login-div').show();
           $('#authservice-forgot-div').hide();
-          $('#authservice-forgot-done').show();
+          $('#authservice-register-div').hide();
           return false;
-
-        } else {
-          // We don't tell the user if they have entered
-          // an incorrect email address, as it could be used
-          // by nasty people to fish for email addresses.
-          // An error here indicates some sort of system error.
-          $('#authservice-forgot-errmsg').show();
-          return false;
-        }
-      });
+        });
 
 
-      $('#authservice-register-submit').click(function() {
-        var username = $('#authservice-register-username').val();
-        var password = $('#authservice-register-password').val();
-        //alert('authservice.register(' + username + ', ' + password + ')');
-
-        var success = false;
-        if (password == 'ok') success = true;
-        if (success) {
-          // Display the success message
+        $('#authservice-forgot-button').click(function(){
+          $('#authservice-login-button').hide();
+          $('#authservice-login-div').hide();
+          $('#authservice-forgot-div').show();
           $('#authservice-register-button').hide();
           $('#authservice-register-div').hide();
-          $('#authservice-register-done').show();
           return false;
-        } else {
-          // Display an error message
-          $('#authservice-register-errmsg').show();
+        });
+
+
+
+        $('#authservice-register-button').click(function(){
+          $('#authservice-login-button').hide();
+          $('#authservice-login-div').hide();
+          $('#authservice-forgot-button').hide();
+          $('#authservice-forgot-div').hide();
+          $('#authservice-register-div').show();
           return false;
-        }
-      });//- click
-    },// init()
+        });
 
 
-    login: function login(username, password, successCallback, failCallback) {
-      console.log('authservice.login(username=' + username + ')');
 
-      // If we are pretending, get the user details now.
-      if (_pretend) {
-        console.log('seems we are pretending')
-        var user = getDummyUser(username);
-        var isFromCookie = false;
-        setCurrentUser(user, null, isFromCookie);
-        //console.log('logged in now as', _currentUser);
-        //authservice.resetLoginMenu();
-        return successCallback(user);
-      }
+        $('#authservice-forgot-cancel').click(authservice.resetLoginMenu);
+        $('#authservice-forgot-ok').click(authservice.resetLoginMenu);
+        $('#authservice-register-cancel').click(authservice.resetLoginMenu);
+        $('#authservice-register-ok').click(authservice.resetLoginMenu);
 
-      /*
-       *  Not pretending.
-       *  Call the server to authenticate the username/password.
-       */
-      var params = {
-        username: username,
-        password: password
-      };
-      authservice_ajax_call('POST', '/login', params, function(response) {
-        console.log('authservice.login() back from AJAX call with', response);
 
-          if (response.status == 'ok') {
 
-            // Logged in.
-            console.log('Back from login:', response);
-            // var user = convertIdentityToUser(response.identity);
-            var jwt = response.jwt;
-            var isFromCookie = false;
-            if (setCurrentUserFromJWT(jwt, isFromCookie)) {
-              // Good login
-              setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
-            } else {
-              // Bad login
-              removeCookie(JWT_COOKIE_NAME);
-            }
-            if (successCallback) {
-              return successCallback(_currentUser);
-            }
+        $('#authservice-logout-button').click(function(){
+          authservice.logout();
+        });
+
+
+
+
+        $('#authservice-login-submit').click(function() {
+           var username = $('#authservice-login-username').val();
+           var password = $('#authservice-login-password').val();
+
+           authservice.login(username, password, function(user){
+             // Success
+             authservice.resetLoginMenu();
+           }, function() {
+             // Fail
+             $('#authservice-login-errmsg').show();
+           })
+
+        });
+
+
+        $('#authservice-forgot-submit').click(function() {
+          var username = $('#authservice-forgot-username').val();
+          alert('forgot(' + username + ')');
+
+          var success = false;
+          if (username == 'ok') success = true;
+          if (success) {
+            // Forward to some other page, or redraw this page
+            $('#authservice-forgot-email2').val(username); // redisplay the email
+            $('#authservice-forgot-button').hide();
+            $('#authservice-forgot-div').hide();
+            $('#authservice-forgot-done').show();
+            return false;
+
           } else {
-
-            // We did not sucessfully login
-            // Display an error message
-            //$('#authservice-login-errmsg').show();
-            var errmess = response.message;
-            if (failCallback) {
-              return failCallback(response.message);
-            } else {
-              alert('Login error:' + errmess)
-            }
+            // We don't tell the user if they have entered
+            // an incorrect email address, as it could be used
+            // by nasty people to fish for email addresses.
+            // An error here indicates some sort of system error.
+            $('#authservice-forgot-errmsg').show();
+            return false;
           }
-      }, function(statusCode, statusText, error) {
-        console.log('Login failed: ', statusCode, statusText, error);
-        if (failCallback) {
-          return failCallback(statusText);
-        }
-      });
-    },
+        });
+
+
+        $('#authservice-register-submit').click(function() {
+          var username = $('#authservice-register-username').val();
+          var password = $('#authservice-register-password').val();
+          //alert('authservice.register(' + username + ', ' + password + ')');
+
+          var success = false;
+          if (password == 'ok') success = true;
+          if (success) {
+            // Display the success message
+            $('#authservice-register-button').hide();
+            $('#authservice-register-div').hide();
+            $('#authservice-register-done').show();
+            return false;
+          } else {
+            // Display an error message
+            $('#authservice-register-errmsg').show();
+            return false;
+          }
+        });//- click
+      }//- bindToDOM
+    },// init()
 
 
     reloadUser: function reloadUser(callback) {
@@ -842,7 +822,7 @@ console.log('*** jQuery AJAX call (before)');
         needRelationships: true,
         needProperties: true
       };
-      authservice_ajax_call('POST', '/getIdentityWithAuthtoken', params, function(identities) {
+      authservice_ajax_call('POST', '/getIdentityWithAuthtoken', params, NOT_AUTHORIZED, function(identities) {
 
         // API call SUCCESS
         console.log('back from /getIdentityWithAuthtoken ', identities)
@@ -883,34 +863,36 @@ console.log('*** jQuery AJAX call (before)');
      *  Reset the login menu.
      */
     resetLoginMenu: function resetLoginMenu() {
-      $('#authservice-login-button').show();
-      $('#authservice-login-div').show();
-      $('#authservice-forgot-button').show();
-      $('#authservice-forgot-div').hide();
-      $('#authservice-forgot-ok').hide();
-      $('#authservice-register-button').show();
-      $('#authservice-register-div').hide();
-      $('#authservice-register-ok').hide();
+      if (_bindToDOM) {
+        $('#authservice-login-button').show();
+        $('#authservice-login-div').show();
+        $('#authservice-forgot-button').show();
+        $('#authservice-forgot-div').hide();
+        $('#authservice-forgot-ok').hide();
+        $('#authservice-register-button').show();
+        $('#authservice-register-div').hide();
+        $('#authservice-register-ok').hide();
 
-      // Clear the username and password fields
-      $('#authservice-login-username').val('');
-      $('#authservice-login-password').val('');
-      $('#authservice-forgot-username').val('');
-      $('#authservice-register-username').val('');
-      $('#authservice-register-password').val('');
+        // Clear the username and password fields
+        $('#authservice-login-username').val('');
+        $('#authservice-login-password').val('');
+        $('#authservice-forgot-username').val('');
+        $('#authservice-register-username').val('');
+        $('#authservice-register-password').val('');
 
 
-      // hide the menu
-      // $('#authservice-user-dropdown').dropdown('toggle');
-      $('#authservice-user-dropdown').parent().removeClass('open');
-      // $('[data-toggle="dropdown"]').parent().removeClass('open');
+        // hide the menu
+        // $('#authservice-user-dropdown').dropdown('toggle');
+        $('#authservice-user-dropdown').parent().removeClass('open');
+        // $('[data-toggle="dropdown"]').parent().removeClass('open');
+      }//- _bindToDOM
       return true;
     },
 
 
     getUser: function getUser(params, callback/*(user)*/) {
       console.log('getUser()');
-      authservice_ajax_call('POST', '/admin/getUser', params, callback);
+      authservice_ajax_call('POST', '/admin/getUser', params, AUTHORIZED, callback);
     }, //getUser
 
 
@@ -919,7 +901,7 @@ console.log('*** jQuery AJAX call (before)');
      */
     addRelationship: function addRelationship(params, callback/*(result)*/) {
       console.log('addRelationship()');
-      authservice_ajax_call('POST', '/admin/addRelationship', params, callback);
+      authservice_ajax_call('POST', '/admin/addRelationship', params, AUTHORIZED, callback);
     },// addRelationship
 
 
@@ -928,7 +910,7 @@ console.log('*** jQuery AJAX call (before)');
      */
     removeRelationship: function removeRelationship(params, callback/*(result)*/) {
       console.log('removeRelationship()');
-      authservice_ajax_call('POST', '/admin/removeRelationship', params, callback);
+      authservice_ajax_call('POST', '/admin/removeRelationship', params, AUTHORIZED, callback);
     },// addRelationship
 
 
@@ -938,7 +920,7 @@ console.log('*** jQuery AJAX call (before)');
      */
     addProperty: function addProperty(params, callback/*(result)*/) {
       console.log('addProperty()');
-      authservice_ajax_call('POST', '/admin/addProperty', params, callback);
+      authservice_ajax_call('POST', '/admin/addProperty', params, AUTHORIZED, callback);
     },// addRelationship
 
 
@@ -947,7 +929,7 @@ console.log('*** jQuery AJAX call (before)');
      */
     removeProperty: function removeProperty(params, callback/*(result)*/) {
       console.log('removeProperty()');
-      authservice_ajax_call('POST', '/admin/removeProperty', params, callback);
+      authservice_ajax_call('POST', '/admin/removeProperty', params, AUTHORIZED, callback);
     },// addRelationship
 
 
@@ -991,6 +973,74 @@ console.log('*** jQuery AJAX call (before)');
     window.location = url;
   }
 
+
+  function login(email, password, successCallback, failCallback) {
+    console.log('authservice.login(username=' + email + ')');
+
+    // If we are pretending, get the user details now.
+    if (_pretend) {
+      console.log('seems we are pretending')
+      var user = getDummyUser(email);
+      var isFromCookie = false;
+      setCurrentUser(user, null, isFromCookie);
+      //console.log('logged in now as', _currentUser);
+      //authservice.resetLoginMenu();
+      return successCallback(user);
+    }
+
+    /*
+     *  Not pretending.
+     *  Call the server to authenticate the username/password.
+     */
+    var params = {
+      email: email,
+      password: password,
+    };
+    authservice_ajax_call('POST', '/email/login', params, NOT_AUTHORIZED, function(response) {
+      console.log('authservice.login() back from AJAX call with', response);
+
+        if (response.status == 'ok') {
+
+          // Logged in.
+          console.log('Back from login:', response);
+          // var user = convertIdentityToUser(response.identity);
+          var jwt = response.jwt;
+          var isFromCookie = false;
+          if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+            // Good login
+            setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
+          } else {
+            // Bad login
+            removeCookie(JWT_COOKIE_NAME);
+          }
+          if (successCallback) {
+            return successCallback(_currentUser);
+          }
+        } else {
+
+          // We did not sucessfully login
+          // Display an error message
+          //$('#authservice-login-errmsg').show();
+          var errmess = response.message;
+          if (failCallback) {
+            return failCallback(response.message);
+          } else {
+            alert('Login error:' + errmess)
+          }
+        }
+    }, function(statusCode, statusText, responseJSON) {
+      console.log('Login failed: ', statusCode, statusText, responseJSON);
+      if (failCallback) {
+        if (responseJSON && responseJSON.message) {
+          return failCallback(responseJSON.message);
+        }
+        return failCallback(statusText);
+      }
+    });
+  }//- login()
+
+
+
   function logout() {
     //alert('authservice.logout()')
     var isFromCookie = false;
@@ -998,7 +1048,7 @@ console.log('*** jQuery AJAX call (before)');
     setCurrentUser(null, null, isFromCookie);
     authservice.resetLoginMenu();
     return false;
-  }
+  }//- logout()
 
 
   function register(options, successCallback, failCallback) {
@@ -1027,9 +1077,19 @@ console.log('*** jQuery AJAX call (before)');
     }
     var params = {
       email: email,
-      username: email,
       resume: resume
     };
+    if (username) {
+      username = username.trim().toLowerCase();
+      if (username.indexOf(' ') >= 0) {
+        return failCallback('Username may not contain spaces');
+      } else if (username.indexOf('@') >= 0) {
+        return failCallback('Username may not contain @');
+      }
+      params.username = username;
+    } else {
+      params.username = email;
+    }
     if (password) {
       if (password.length < 5) {
         return failCallback('Please enter a longer password');
@@ -1037,15 +1097,15 @@ console.log('*** jQuery AJAX call (before)');
       params.password = password;
     }
     if (first_name) {
-      if (first_name.length < 5) {
+      if (first_name.length < 1) {
         return failCallback('Please enter a first name');
       }
       params.first_name = first_name;
     }
     if (middle_name) {
-      if (middle_name.length > 0) {
+      // if (middle_name.length > 0) {
         params.middle_name = middle_name;
-      }
+      // }
     }
     if (last_name) {
       if (last_name.length < 1) {
@@ -1056,27 +1116,210 @@ console.log('*** jQuery AJAX call (before)');
 
     // Call the server
     console.log('params=', params);
-    authservice_ajax_call('POST', '/email/register', params, function(response) {
+    authservice_ajax_call('PUT', '/email/register', params, NOT_AUTHORIZED, function(response) {
+
+      // Success
       console.log('response is ', response)
 
-
-      //ZZZZZ Maybe this is consider logged in?
-
-        if (response && response.status == 'ok') {
-          // Look successful
-          if (successCallback) {
-            return successCallback();
-          }
-        } else {
-          // Display an error message
-          //$('#authservice-login-errmsg').show();
-          var err = (response && response.message) ? response.message : 'Error while registering';
-          if (failCallback) {
-            return failCallback(err);
+      if (response && response.status == 'ok') {
+        // If we have a new JWT, re-set the current user
+        if (response.jwt) {
+          var jwt = response.jwt;
+          var isFromCookie = false;
+          if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+            // Good login
+            setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
+          } else {
+            // Bad login
+            removeCookie(JWT_COOKIE_NAME);
           }
         }
+        if (successCallback) {
+          return successCallback();
+        }
+      } else {
+        // Display an error message
+        //$('#authservice-login-errmsg').show();
+        var err = (response && response.message) ? response.message : 'Error while registering';
+        if (failCallback) {
+          return failCallback(err);
+        }
+      }
+    }, function(code, text, data) {
+      // Error
+      var err = (data && data.Error) ? data.Error : 'Error while registering';
+      if (failCallback) {
+        return failCallback(err);
+      }
     });
   }// register()
+
+
+  function forgot(options, successCallback, failCallback) {
+    //alert('register()')
+    var email = options.email;
+    var resume = options.resume;
+
+    // If we are pretending, get the user details now.
+    if (_pretend) {
+      console.log('seems we are pretending')
+      return successCallback();
+    }
+
+    /*
+     *  Not pretending.
+     *  Call the server to register.
+     */
+    // Check email and password is valid
+    if (email==null || email.indexOf('@') < 1) {
+      return failCallback('Please enter a valid email address');
+    }
+    var params = {
+      email: email,
+      resume: resume
+    };
+
+    // Call the server
+    console.log('params=', params);
+    authservice_ajax_call('POST', '/email/forgot', params, NOT_AUTHORIZED, function(response) {
+      console.log('response is ', response)
+
+      if (response && response.status == 'ok') {
+
+        // Successful
+        if (successCallback) {
+          return successCallback();
+        }
+      } else {
+
+        // Error
+        var err = (response && response.message) ? response.message : 'Error while sending email';
+        if (failCallback) {
+          return failCallback(err);
+        }
+      }
+    });
+  }// register()
+
+
+  function updateUser(user, successCallback, failCallback) {
+    console.log('updateUser()', user);
+
+    if (!user.id) {
+      return failCallback('user.id not provided to Authservice.updateUser()');
+    }
+
+    // If we are pretending, get the user details now.
+    if (_pretend) {
+      console.log('seems we are pretending')
+      return successCallback();
+    }
+
+    /*
+     *  Not pretending.
+     *  Call the server to register.
+     */
+
+    // Call the server
+    var url = ENDPOINT + '/user';
+    console.log('user=', user);
+
+
+    var json = JSON.stringify(user)
+    $.ajax({
+      url: ENDPOINT + '/user',
+      type: 'POST',
+      crossDomain: true,
+      async: true,
+      data: json,
+      dataType: "json",
+      headers: {
+        'Authorization': 'Bearer ' + _jwt
+      },
+      contentType: 'application/json',
+      success: function(response) {
+        console.log('Authservice.updateUser() success', response);
+
+        if (response && response.status == 'ok') {
+
+          if (response.jwt) {
+            var jwt = response.jwt;
+            var isFromCookie = false;
+            if (setCurrentUserFromJWT(jwt, isFromCookie)) {
+              // Good login
+              setCookie(JWT_COOKIE_NAME, jwt, LOGIN_TIMEOUT_DAYS);
+            } else {
+              // Bad login
+              removeCookie(JWT_COOKIE_NAME);
+            }
+          }
+        }
+
+        // Successful AJAX call.
+        return successCallback(response);
+      },
+      error: function(jqxhr, textStatus, errorThrown) {
+        console.log('Authservice.updateUser() failed', jqxhr, textStatus, errorThrown)
+
+        if (jqxhr.responseJSON && jqxhr.responseJSON.Error) {
+          console.log('Error is ', jqxhr.responseJSON.Error);
+          return failCallback(jqxhr.responseJSON.Error);
+        }
+        return failCallback('Update failed');
+      }
+    });
+  }
+
+
+  function usernameAvailability(username, successCallback, failCallback) {
+    console.log('usernameAvailability()', username);
+
+    // If we are pretending, get the user details now.
+    if (_pretend) {
+      console.log('seems we are pretending')
+      return successCallback(true);
+    }
+
+    /*
+     *  Not pretending.
+     *  Call the server to check if the username is available.
+     */
+
+    // Call the server
+    username = username.trim().toLowerCase();
+    var url = ENDPOINT + '/username-availability/' + encodeURIComponent(username);
+    console.log('url=', url);
+
+    $.ajax({
+      url: url,
+      type: 'GET',
+      crossDomain: true,
+      async: true,
+      // data: json,
+      dataType: "json",
+      contentType: 'application/json',
+      success: function(response) {
+
+        // Successful AJAX call.
+        console.log('Authservice.usernameAvailability() success', response);
+        if (response && response.status == 'available') {
+          return successCallback(null);
+        } else {
+          return successCallback(response.error);
+        }
+      },
+      error: function(jqxhr, textStatus, errorThrown) {
+        console.log('Authservice.usernameAvailability() failed', jqxhr, textStatus, errorThrown)
+
+        if (jqxhr.responseJSON && jqxhr.responseJSON.Error) {
+          console.log('Error is ', jqxhr.responseJSON.Error);
+          return failCallback(jqxhr.responseJSON.Error);
+        }
+        return failCallback('Could not check availability');
+      }
+    });
+  }
+
 
   // When this is called from a page, two things happen.
   //  1. If there is a 'jwt' parameter to the page it gets stored as a cookie.
@@ -1089,7 +1332,7 @@ console.log('*** jQuery AJAX call (before)');
     }
     var resume = getURLParameterByName("resume")
     console.log('Redirect to ' + resume)
-    alert('about to redirect')
+    //alert('about to redirect')
     var debug = getURLParameterByName("debug")
     if (!debug) {
       window.location = resume;

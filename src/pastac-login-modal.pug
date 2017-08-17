@@ -28,8 +28,8 @@ block content
                 //- form-group
                 div(ng-hide="!ctrl.loginError" role="alert" Zstyle="display:none;").alert.alert-danger
                   span.glyphicon.glyphicon-exclamation-sign.icon-center.aria-hidden
-                  //- span.sr-only Error:
-                  | {{ctrl.loginError}}
+                  span.sr-only &nbsp;&nbsp;Error:
+                  | &nbsp;{{ctrl.loginError}}
                 a.jjj-btn.green.block(href='', ng-click="ctrl.doEmailSignin()") Continue
                 p.or or
                 a.jjj-btn.fb.block(ng-click="ctrl.initiateOAuth2('facebook')")
@@ -95,7 +95,9 @@ block content
                   span(class="error")
                   //- p.text-center Enter a valid email address.
                 //- form-group
-                a.jjj-btn.green.block(href='', data-toggle='modal', data-dismiss='modal', ng-click="ctrl.doRegister()") Continue
+                a.jjj-btn.green.block(href='', data-toggle='modal', data-dismiss='modal', ng-click="ctrl.doRegister()")
+                  .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.registerInProgress")
+                  | Continue
                 p.or or continue with
                 a.jjj-btn.fb.block(ng-click="ctrl.initiateOAuth2('facebook')")
                   i.fa.fa-facebook

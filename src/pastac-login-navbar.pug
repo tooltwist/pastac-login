@@ -27,8 +27,12 @@ block content
         #authservice-login-div
           form(ng-hide="ctrl.mode!='login'")
             .form-group
-              label Username
-              input(type="Zemail" ng-model="ctrl.username").form-control
+              div(ng-if="ctrl.loginWithUsername")
+                label Username / Email
+                input(type="text" ng-model="ctrl.email").form-control
+              div(ng-if="!ctrl.loginWithUsername")
+                label Email
+                input(type="email" ng-model="ctrl.email").form-control
             //- form-group
             .form-group
               label Password
@@ -44,9 +48,9 @@ block content
               .alert.alert-danger
                 span.glyphicon.glyphicon-exclamation-sign.aria-hidden
                 span.sr-only &nbsp;&nbsp;Error:
-                | {{ctrl.loginError}}
+                | &nbsp;{{ctrl.loginError}}
               
-            div(ng-hide="ctrl.hideForgot").hide.NOTYET
+            div(ng-hide="ctrl.hideForgot")
               br
               .text-center()
                 a(ng-click="ctrl.setMode('forgot'); $event.stopPropagation();") Forgot password
@@ -87,8 +91,9 @@ block content
             | well send an email with a link to reset your password.
           form
             div.form-group
-              input(type="email" id="authservice-forgot-username" placeholder="Email").form-control
+              input(type="email" ng-model="ctrl.forgot_email" placeholder="Email" autocomplete="off").form-control
             button.btn.btn-info(ng-click="ctrl.doForgot()")
+              .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.forgotInProgress")
               | Send the email
             button.btn.btn-default(ng-click="ctrl.setMode('login'); $event.stopPropagation();")
               | cancel
@@ -114,10 +119,20 @@ block content
           form
             p
               | Hi!
-              | Enter your email address
-              span(ng-if="ctrl.registerWithField('password')") &nbsp;and a password
-              | &nbsp;and we'll be happy to sign you up.
+              | Enter your details and we'll be happy to sign you up.
             //- p
+            div.form-group(ng-if="ctrl.loginWithUsername")
+              .control-group(ng-if="!ctrl.validatingUsername")
+                input.form-control(type="text" ng-model="ctrl.register_username" placeholder="Choose a username" ng-model-options="{ debounce: 800 }" ng-change="ctrl.validateUsername()")
+                div(ng-if="ctrl.register_username && ctrl.usernameErrorMessage")
+                  br
+                  .alert.alert-warning
+                    | {{ctrl.usernameErrorMessage}}
+              .input-group(ng-if="ctrl.validatingUsername")
+                input.form-control(type="text" ng-model="ctrl.register_username" placeholder="Choose a username" ng-model-options="{ debounce: 800 }" ng-change="ctrl.validateUsername()")
+                .input-group-addon#register-username
+                  .spinner-right.glyphicon.glyphicon-refresh
+
             div.form-group
               input(type="email" ng-model="ctrl.register_email" placeholder="Email" autocomplete="off").form-control
             //- div
@@ -135,7 +150,9 @@ block content
             div(ng-hide="!ctrl.registerWithField('last_name')")
               input.form-control(type='text', ng-model="ctrl.register_last_name", placeholder='Last name')
               br
-            a.btn.btn-info(href="#" ng-click="ctrl.doRegister(); $event.stopPropagation();") register
+            a.btn.btn-info(href="#" ng-click="ctrl.doRegister(); $event.stopPropagation();" ng-disabled="ctrl.loginWithUsername && (ctrl.register_username=='' || !ctrl.usernameErrorMessage)")
+              .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.registerInProgress")
+              | register
             button.btn.btn-default(href="#" ng-click="ctrl.register_password=''; ctrl.setMode('login'); $event.stopPropagation();") cancel
           //- form
           div(id="login-errmsg" role="alert" style="display:none;").alert.alert-danger

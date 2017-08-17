@@ -17,7 +17,7 @@
             <div class="form-group">
               <input class="form-control" type="password" ng-model="ctrl.password" placeholder="Enter your Password">
             </div>
-            <div class="alert alert-danger" ng-hide="!ctrl.loginError" role="alert" Zstyle="display:none;"><span class="glyphicon glyphicon-exclamation-sign icon-center aria-hidden"></span>{{ctrl.loginError}}</div><a class="jjj-btn green block" href="" ng-click="ctrl.doEmailSignin()">Continue</a>
+            <div class="alert alert-danger" ng-hide="!ctrl.loginError" role="alert" Zstyle="display:none;"><span class="glyphicon glyphicon-exclamation-sign icon-center aria-hidden"></span><span class="sr-only">&nbsp;&nbsp;Error:</span>&nbsp;{{ctrl.loginError}}</div><a class="jjj-btn green block" href="" ng-click="ctrl.doEmailSignin()">Continue</a>
             <p class="or">or</p><a class="jjj-btn fb block" ng-click="ctrl.initiateOAuth2('facebook')"><i class="fa fa-facebook"></i>&nbsp;Login with Facebook</a>
             <p></p><a class="jjj-btn gplus block" ng-click="ctrl.initiateOAuth2('google')"><i class="fa fa-google-plus"></i>&nbsp;Login with Google +</a>
           </div>
@@ -52,7 +52,8 @@
               <div ng-hide="false &amp;&amp; !ctrl.registerLastName">
                 <input class="form-control" type="text" ng-hide="!ctrl.registerPassword" placeholder="Enter your last name" ng-model="ctrl.register_last_name"><br>
               </div><span class="error"></span>
-            </div><a class="jjj-btn green block" href="" data-toggle="modal" data-dismiss="modal" ng-click="ctrl.doRegister()">Continue</a>
+            </div><a class="jjj-btn green block" href="" data-toggle="modal" data-dismiss="modal" ng-click="ctrl.doRegister()">
+              <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.registerInProgress"></div>Continue</a>
             <p class="or">or continue with</p><a class="jjj-btn fb block" ng-click="ctrl.initiateOAuth2('facebook')"><i class="fa fa-facebook"></i>&nbsp;Login with Facebook</a>
             <p></p><a class="jjj-btn gplus block" ng-click="ctrl.initiateOAuth2('google')"><i class="fa fa-google-plus"></i>&nbsp;Login with Google +</a>
           </div>

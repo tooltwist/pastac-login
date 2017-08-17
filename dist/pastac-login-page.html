@@ -25,7 +25,7 @@
           </div>
           <button class="btn btn-success btn-block" type="submit" id="authservice-login-submit" onclick="return false;">Sign in</button>
         </form>
-        <div class="alert alert-danger" id="authservice-login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign aria-hidden"></span><span class="sr-only">Error:</span>Invalid email / password</div><br><a id="authservice-forgot-button" href="#">Forgot password</a><br><a id="authservice-register-button" href="#">Register</a>
+        <div class="alert alert-danger" id="authservice-login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign aria-hidden"></span><span class="sr-only">&nbsp;&nbsp;Error:</span>&nbsp;{{ctrl.loginError}}</div><br><a id="authservice-forgot-button" href="#">Forgot password</a><br><a id="authservice-register-button" href="#">Register</a>
         <!-- FORGOT PASSWORD-->
       </div>
       <div id="authservice-forgot-div" style="display:none;">
@@ -65,7 +65,9 @@
           <div class="form-group">
             <input class="form-control" type="password" id="authservice-register-password" placeholder="Password">
           </div>
-          <button class="btn btn-default" type="submit" id="authservice-register-submit">register</button>
+          <button class="btn btn-default" type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()">
+            <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.registerInProgress"></div>register
+          </button>
           <button class="btn btn-default" type="submit" id="authservice-register-cancel">cancel</button>
         </form>
         <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>

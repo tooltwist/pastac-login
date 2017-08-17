@@ -66,7 +66,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li>
-                <pastac-login config="authserviceConfig" template="invisible" handler="userHandler"></pastac-login>
+                <pastac-login config="authserviceConfig" template="navbar" handler="userHandler"></pastac-login>
               </li>
             </ul>
           </div>
@@ -86,7 +86,15 @@
           <br/>
           <input class="form-control" ng-model="new_last_name", placeholder="Last name">
           <br/>
-          <a class="btn btn-info" href="#" ng-click="saveDetails(); $event.stopPropagation();"> Update details </a>
+          <a class="btn btn-info" href="#" ng-click="saveDetails(); $event.stopPropagation();">
+            <div class="spinner glyphicon glyphicon-refresh" ng-hide="!update_inProgress"></div>
+            Update details
+          </a>
+          <div ng-if="errorMessage">
+            <br>
+            <br>
+            <div class="alert alert-danger">Error: {{errorMessage}}</div>
+          </div>
 
         </div>
 
@@ -113,7 +121,8 @@
  <script>
  var AUTHSERVICE_HOST = 'localhost';
  var AUTHSERVICE_PORT = 9090;
- var AUTHSERVICE_TENANT = 'nodeclient';
+ // var AUTHSERVICE_TENANT = 'nodeclient';
+ var AUTHSERVICE_TENANT = 'drinkcircle';
  var AUTHSERVICE_USE_DUMMY_LOGIN = false;
 
  </script>
@@ -143,12 +152,19 @@
     };
     $scope.userHandler = {
       onUserChange: function(user, jwt, stale) {
-        console.log('Wow, the user changed!', user);
+        console.log('User change:', user);
         $scope.currentUser = user;
-        $scope.new_password = '';
-        $scope.new_first_name = user.firstname;
-        $scope.new_middle_name = user.middlename;
-        $scope.new_last_name = user.lastname;
+        if (user) {
+          $scope.new_password = '';
+          $scope.new_first_name = user.firstname;
+          $scope.new_middle_name = user.middlename;
+          $scope.new_last_name = user.lastname;
+        } else {
+          $scope.new_password = '';
+          $scope.new_first_name = '';
+          $scope.new_middle_name = '';
+          $scope.new_last_name = '';
+        }
       }
     }
 
@@ -157,10 +173,35 @@
   		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
   	}
 
-  	$scope.errorMessage = getParameterByName("AUTHSERVICE_ERROR");
+  	// $scope.errorMessage = getParameterByName("AUTHSERVICE_ERROR");
 
     $scope.saveDetails = function() {
-      alert('Save details')
+      // alert('Save details')
+
+      var user = {
+        id: $scope.currentUser.id,
+        first_name: $scope.new_first_name,
+        middle_name: $scope.new_middle_name,
+        last_name: $scope.new_last_name,
+      };
+      if ($scope.new_password) {
+        user.password = $scope.new_password;
+      }
+
+      $scope.update_inProgress = true;
+      Authservice.updateUser(user, function() {
+        $timeout(function () {
+          $scope.update_inProgress = false;
+          $scope.errorMessage = ""
+        }, 10);
+      }, function(err) {
+        // alert('update failed: ' + err)
+        $timeout(function () {
+          $scope.update_inProgress = false;
+          $scope.errorMessage = err;
+          console.log('err is ' + $scope.errorMessage);
+        }, 10);
+      })
     }
   });
 

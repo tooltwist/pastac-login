@@ -36,8 +36,8 @@ block content
           //- form
           div(id="authservice-login-errmsg" role="alert" style="display:none;").alert.alert-danger
             span.glyphicon.glyphicon-exclamation-sign.aria-hidden
-            span.sr-only Error:
-            | Invalid email / password
+            span.sr-only &nbsp;&nbsp;Error:
+            | &nbsp;{{ctrl.loginError}}
           br
           a(id="authservice-forgot-button" href="#") Forgot password
           br
@@ -93,7 +93,9 @@ block content
             div.form-group
               input(type="password" id="authservice-register-password" placeholder="Password").form-control
             //- div
-            button(type="submit" id="authservice-register-submit").btn.btn-default register
+            button(type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()").btn.btn-default
+              .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.registerInProgress")
+              | register
             button(type="submit" id="authservice-register-cancel").btn.btn-default cancel
           //- form
           div(id="login-errmsg" role="alert" style="display:none;").alert.alert-danger

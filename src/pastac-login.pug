@@ -77,7 +77,7 @@ block content
 
           // REGISTER
           li.authservice-loggedin-section
-            a(id="authservice-register-button" href="#") Register
+            a(id="authservice-register-button" href="#") RegisterZ
             div(id="authservice-register-div" style="display:none;")
               form
                 p
@@ -91,7 +91,9 @@ block content
                 div.form-group
                   input(type="password" id="authservice-register-password" placeholder="Password").form-control
                 //- div
-                button(type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()").btn.btn-default register
+                button(type="submit" id="authservice-register-submit" ng-click="ctrl.doRegister()").btn.btn-default
+                  .spinner.glyphicon.glyphicon-refresh(ng-hide="!ctrl.registerInProgress")
+                  | register
                 button(type="submit" id="authservice-register-cancel").btn.btn-default cancel
               //- form
               div(id="login-errmsg" role="alert" style="display:none;").alert.alert-danger
@@ -103,7 +105,7 @@ block content
             div(id="authservice-register-done" style="display:none;")
               p
                 | Congratulations, you now have a user account.
-                | We have sent you an email to verify you email address.
+                | We have sent you an email to verify your email address.
               p
                 | Please take a moment to check your email and complete
                 | the registration process.

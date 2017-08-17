@@ -10,8 +10,14 @@
     <div id="authservice-login-div">
       <form ng-hide="ctrl.mode!='login'">
         <div class="form-group">
-          <label>Username</label>
-          <input class="form-control" type="Zemail" ng-model="ctrl.username">
+          <div ng-if="ctrl.loginWithUsername">
+            <label>Username / Email</label>
+            <input class="form-control" type="text" ng-model="ctrl.email">
+          </div>
+          <div ng-if="!ctrl.loginWithUsername">
+            <label>Email</label>
+            <input class="form-control" type="email" ng-model="ctrl.email">
+          </div>
         </div>
         <div class="form-group">
           <label>Password</label>
@@ -20,9 +26,9 @@
         <button class="btn btn-success btn-block" ng-click="ctrl.doEmailSignin(); $event.stopPropagation();"><span ng-hide="ctrl.signin">Login</span><span ng-hide="!ctrl.signin">Sign in</span></button>
         <!-- Error message-->
         <div ng-hide="!ctrl.loginError"><br>
-          <div class="alert alert-danger"><span class="glyphicon glyphicon-exclamation-sign aria-hidden"></span><span class="sr-only">&nbsp;&nbsp;Error:</span>{{ctrl.loginError}}</div>
+          <div class="alert alert-danger"><span class="glyphicon glyphicon-exclamation-sign aria-hidden"></span><span class="sr-only">&nbsp;&nbsp;Error:</span>&nbsp;{{ctrl.loginError}}</div>
         </div>
-        <div class="hide NOTYET" ng-hide="ctrl.hideForgot"><br>
+        <div ng-hide="ctrl.hideForgot"><br>
           <div class="text-center"><a ng-click="ctrl.setMode('forgot'); $event.stopPropagation();">Forgot password</a></div>
         </div>
         <div ng-hide="ctrl.hideRegister"><br>
@@ -44,9 +50,11 @@
       </p>
       <form>
         <div class="form-group">
-          <input class="form-control" type="email" id="authservice-forgot-username" placeholder="Email">
+          <input class="form-control" type="email" ng-model="ctrl.forgot_email" placeholder="Email" autocomplete="off">
         </div>
-        <button class="btn btn-info" ng-click="ctrl.doForgot()">Send the email</button>
+        <button class="btn btn-info" ng-click="ctrl.doForgot()">
+          <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.forgotInProgress"></div>Send the email
+        </button>
         <button class="btn btn-default" ng-click="ctrl.setMode('login'); $event.stopPropagation();">cancel</button>
       </form>
       <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>
@@ -66,8 +74,22 @@
       <form>
         <p>
           Hi!
-          Enter your email address<span ng-if="ctrl.registerWithField('password')">&nbsp;and a password</span>&nbsp;and we'll be happy to sign you up.
+          Enter your details and we'll be happy to sign you up.
         </p>
+        <div class="form-group" ng-if="ctrl.loginWithUsername">
+          <div class="control-group" ng-if="!ctrl.validatingUsername">
+            <input class="form-control" type="text" ng-model="ctrl.register_username" placeholder="Choose a username" ng-model-options="{ debounce: 800 }" ng-change="ctrl.validateUsername()">
+            <div ng-if="ctrl.register_username &amp;&amp; ctrl.usernameErrorMessage"><br>
+              <div class="alert alert-warning">{{ctrl.usernameErrorMessage}}</div>
+            </div>
+          </div>
+          <div class="input-group" ng-if="ctrl.validatingUsername">
+            <input class="form-control" type="text" ng-model="ctrl.register_username" placeholder="Choose a username" ng-model-options="{ debounce: 800 }" ng-change="ctrl.validateUsername()">
+            <div class="input-group-addon" id="register-username">
+              <div class="spinner-right glyphicon glyphicon-refresh"></div>
+            </div>
+          </div>
+        </div>
         <div class="form-group">
           <input class="form-control" type="email" ng-model="ctrl.register_email" placeholder="Email" autocomplete="off">
         </div>
@@ -84,7 +106,8 @@
         </div>
         <div ng-hide="!ctrl.registerWithField('last_name')">
           <input class="form-control" type="text" ng-model="ctrl.register_last_name" placeholder="Last name"><br>
-        </div><a class="btn btn-info" href="#" ng-click="ctrl.doRegister(); $event.stopPropagation();">register</a>
+        </div><a class="btn btn-info" href="#" ng-click="ctrl.doRegister(); $event.stopPropagation();" ng-disabled="ctrl.loginWithUsername &amp;&amp; (ctrl.register_username=='' || !ctrl.usernameErrorMessage)">
+          <div class="spinner glyphicon glyphicon-refresh" ng-hide="!ctrl.registerInProgress"></div>register</a>
         <button class="btn btn-default" href="#" ng-click="ctrl.register_password=''; ctrl.setMode('login'); $event.stopPropagation();">cancel</button>
       </form>
       <div class="alert alert-danger" id="login-errmsg" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>Invalid email / password</div>
