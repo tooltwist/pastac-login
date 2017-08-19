@@ -37,6 +37,9 @@
         <button class="btn btn-block btn-facebook" ng-hide="!ctrl.facebook" type="button" ng-click="ctrl.initiateOAuth2('facebook')"><i class="fa fa-facebook left"></i><span ng-hide="ctrl.signin">&nbsp;Login with Facebook</span><span ng-hide="!ctrl.signin">&nbsp;Sign in with Facebook</span></button>
         <button class="btn btn-block btn-google" ng-hide="!ctrl.google" type="button" ng-click="ctrl.initiateOAuth2('google')"><i class="fa fa-google left"></i><span ng-hide="ctrl.signin">&nbsp;Login with Google</span><span ng-hide="!ctrl.signin">&nbsp;Sign in with Google</span></button>
         <button class="btn btn-block btn-github" ng-hide="!ctrl.github" type="button" ng-click="ctrl.initiateOAuth2('github')"><i class="fa fa-github left"></i><span ng-hide="ctrl.signin">&nbsp;Login with Github</span><span ng-hide="!ctrl.signin">&nbsp;Sign in with Github</span></button>
+        <div ng-repeat="item in ctrl.loggedOutMenuItems"><br>
+          <div class="text-center"><a ng-click="ctrl.onMenuItem(item.tag);">{{item.label}}</a></div>
+        </div>
       </form>
     </div>
   </li>
@@ -131,5 +134,6 @@
 <!---->
 <!----><a class="dropdown-toggle info" ng-hide="ctrl.hideLogout || !ctrl.user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" ng-cloak><img class="pastac-login-navbar-avatar" ng-hide="!ctrl.user.avatar" ng-src="{{ctrl.user.avatar}}" alt=""><span class="fa-stack fa" ng-hide="ctrl.user.avatar"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-user fa-stack-1x fa-inverse"></i></span>&nbsp;{{ctrl.user.firstname}}</a>
 <ul class="dropdown-menu" ng-hide="ctrl.hideLogout || !ctrl.user" role="menu" aria-labelledby="signed-out-menu-button">
+  <li ng-repeat="item in ctrl.loggedInMenuItems"><a data-toggle="modal" ng-click="ctrl.onMenuItem(item.tag);">{{item.label}}</a></li>
   <li><a Zid="authservice-logout-button" data-toggle="modal" ng-click="ctrl.doLogout()"><span ng-hide="ctrl.signin">Logout</span><span ng-hide="!ctrl.signin">Sign out</span></a></li>
 </ul>

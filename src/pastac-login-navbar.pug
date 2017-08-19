@@ -72,6 +72,13 @@ block content
               i.fa.fa-github.left
               span(ng-hide="ctrl.signin") &nbsp;Login with Github
               span(ng-hide="!ctrl.signin") &nbsp;Sign in with Github
+            div(ng-repeat="item in ctrl.loggedOutMenuItems")
+              br
+              .text-center
+                a(ng-click="ctrl.onMenuItem(item.tag);")
+                  | {{item.label}}
+              //- br
+            
           //- form
           //- div
         //- div
@@ -200,6 +207,10 @@ block content
       
     ul.dropdown-menu(ng-hide="ctrl.hideLogout || !ctrl.user", role="menu" aria-labelledby="signed-out-menu-button")
       //- li.divider(role='separator')
+      li(ng-repeat="item in ctrl.loggedInMenuItems")
+        a(data-toggle='modal' ng-click="ctrl.onMenuItem(item.tag);")
+          | {{item.label}}
+
       li
         a(Zid="authservice-logout-button" data-toggle='modal' ng-click="ctrl.doLogout()")
           span(ng-hide="ctrl.signin") Logout

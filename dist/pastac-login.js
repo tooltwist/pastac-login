@@ -21,6 +21,8 @@ angular.module('pastac-login', [])
     hideForgot: '<', // boolean
     hideAvatar: '<', // boolean
     hideLogout: '<', // boolean
+    bindToDom: '<', // boolean
+    extraMenuItems: '<', // string ([+-]tag:label, ...) + = logged in, - = logged out.
 
     // Registration-related
     registerFields: '<', // string (password,first_name,middle_name,last_name)
@@ -159,6 +161,8 @@ function PastacLoginController($scope, $timeout) {
 
   ctrl.$onInit = function() {
 
+    console.log('ctrl=', ctrl);
+
     // Set the initial mode
     ctrl.loggedIn = false;
     ctrl.mode = 'login';
@@ -167,6 +171,10 @@ function PastacLoginController($scope, $timeout) {
     ctrl.usernameErrorMessage = '';
 
     userHandler = ctrl.handler;
+    //alert('authservice.init()');
+
+    // Check for extra menu items
+    parseExtraMenuItems(); // sets ctrl.loggedInMenuItems and ctrl.loggedOutMenuItems.
 
     // Get the user details.
     authservice.init({
@@ -175,7 +183,7 @@ function PastacLoginController($scope, $timeout) {
       tenant: ctrl.config.tenant,
       version: ctrl.config.version,
       pretend: ctrl.config.pretend,
-
+      bindToDOM: ctrl.bindToDOM,
       onUserChange: function(user, ttuat, stale) {
 
         // If the current user came from the cookie, reload it
@@ -390,15 +398,86 @@ function PastacLoginController($scope, $timeout) {
           alert('Could not send forgotten password email: ' + error)
         }, 10);
       })
-    }
+    }//- doForgot()
 
-
-
+    ctrl.onMenuItem = function(tag) {
+      console.log('onMenuItem(' + tag + ')');
+      if (!ctrl.handler) {
+        console.log('pastac-login: NOT calling handler.onMenuItem (handler not defined)');
+      } else if (!ctrl.handler.onMenuItem) {
+        console.log('pastac-login: NOT calling handler.onMenuItem (handler.onMenuItem not defined)');
+      } else {
+        // Call the user handler
+        //console.log('pastac-login: calling handler.onUserChange');
+        $timeout(function(){
+          ctrl.handler.onMenuItem(tag);
+        }, 1);
+      };
+    }//- onMenuItem()
   };//- onInit
 
+  ctrl.$onChanges = function(changesObj) {
+    console.log('$onChanges()');
+    parseExtraMenuItems();
+  };
 
+  // Parse the extra-menu-items tag, which has the form
+  //  ([+-]tag:label, ...)
+  //    + means logged in
+  //    - means logged out.
+  //    default is when both logged in and logged out
+  //
+  function parseExtraMenuItems() {
+    ctrl.loggedInMenuItems = [ ];
+    ctrl.loggedOutMenuItems = [ ];
+    if (ctrl.extraMenuItems) {
+      console.log('extraMenuItems=' + ctrl.extraMenuItems);
+      var list = ctrl.extraMenuItems.split(',');
+      console.log(typeof(list));
+      list.forEach(function(item) {
+        console.log('item=' + item);
+        item = item.trim();
 
+        // Check for the logged in/logged out indicator
+        var loggedIn = false;
+        var loggedOut = false;
+        if (item.startsWith('+')) {
+          loggedIn = true;
+          item = item.substring(1)
+        }
+        else if (item.startsWith('-')) {
+          loggedOut = true;
+          item = item.substring(1)
+        }
+        if ( !loggedIn && !loggedOut ) {
+          loggedIn = true;
+          loggedOut = true;
+        }
 
+        // Split into tag and label.
+        // If there is no label, the tag also becomes the label.
+        console.log('item=' + item);
+        var pos = item.indexOf(':');
+        console.log('pos=' + pos);
+        if (pos >= 0) {
+          var tag = item.substring(0, pos);
+          var label = item.substring(pos + 1);
+        } else {
+          tag = item;
+          label = item;
+        }
 
+        // Add this item to the appropriate menu item list.
+        if (loggedIn) {
+          ctrl.loggedInMenuItems.push({ tag: tag, label: label });
+        }
+        if (loggedOut) {
+          ctrl.loggedOutMenuItems.push({ tag: tag, label: label });
+        }
+      });
+    }
+    console.log(' in: ', ctrl.loggedInMenuItems);
+    console.log('out: ', ctrl.loggedOutMenuItems);
+  }//- parseExtraMenuItems
 
 }

@@ -1,6 +1,6 @@
 {
   "name": "pastac-login",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jwt-decode": "^2.2.0"

@@ -109,7 +109,7 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" login-with-username="usernameLogin" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL" register-resume="registerResumeURL"></pastac-login>
+              <pastac-login config="authserviceConfig" template="navbar" handler="userHandler" fresh-credentials="true" login-with-username="usernameLogin" signin="saySignin" hide-register="hideRegister" hide-forgot="hideForgot" hide-avatar="hideAvatar" facebook="useFacebook" google="useGoogle" github="useGithub" register-fields="registerFields" resume="resumeURL" error="errorURL" register-resume="registerResumeURL" extra-menu-items="extraMenuItems()"></pastac-login>
             </li>
           </ul>
         </div>
@@ -129,6 +129,8 @@
           <input type="checkbox" ng-model="hideForgot"> Hide the "forgot password" option
           <br/>
           <input type="checkbox" ng-model="hideAvatar"> Use an icon instead of the user avatar
+          <br/>
+          <input type="checkbox" ng-model="menuItems"> Extra menu items
           <br/>
         </div>
         <div class="col-md-6">
@@ -155,7 +157,8 @@
         signin="true"</span><span ng-if="hideRegister">
         hide-register="true"</span><span ng-if="hideForgot">
         hide-forgot="true"</span><span ng-if="hideAvatar">
-        hide-avatar="true"</span><span ng-if="usernameLogin">
+        hide-avatar="true"</span><span ng-if="menuItems">
+        extra-menu-items="{{extraMenuItems()}}"</span><span ng-if="usernameLogin">
         login-with-username="true"</span><span ng-if="useFacebook">
         facebook="true"</span><span ng-if="useGoogle">
         google="true"</span><span ng-if="useGithub">
@@ -172,7 +175,8 @@
         > signin="true"</span><span ng-if="hideRegister"
         > hide-register="true"</span><span ng-if="hideForgot"
         > hide-forgot="true"</span><span ng-if="hideAvatar"
-        > hide-avatar="true"</span><span ng-if="usernameLogin"
+        > hide-avatar="true"</span><span ng-if="menuItems"
+        > extra-menu-items="{{extraMenuItems()}}"</span><span ng-if="usernameLogin"
         > login-with-username="true"</span><span ng-if="useFacebook"
         > facebook="true"</span><span ng-if="useGoogle"
         > google="true"</span><span ng-if="useGithub"
@@ -218,6 +222,7 @@ var module = angular.module('myApp', [ 'pastac-login' ]);
 module.controller('myCtrl', function($scope, $timeout) {
 
   $scope.hideAvatar = true;
+  $scope.menuItems = false;
   $scope.usernameLogin = false;
   $scope.useFacebook = true;
   $scope.useGoogle = true;
@@ -239,8 +244,19 @@ module.controller('myCtrl', function($scope, $timeout) {
       console.log('onUserChange():', user);
       $scope.currentUser = user;
       $scope.ttuat = ttuat;
+    },
+    onMenuItem: function(tag) {
+      alert('Selected menu item: ' + tag);
     }
   }
+
+  $scope.extraMenuItems = function() {
+    if ($scope.menuItems) {
+        return '+item1:Menu item #1,item2:Menu item #2,-item3:Menu item #3';
+    }
+    return '';
+  }
+
 
   $scope.setRegisterFields = function() {
     var sep = '';

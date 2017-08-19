@@ -669,6 +669,7 @@ console.log('*** jQuery AJAX call (before)');
       }
       if (options.bindToDOM) {
         _bindToDOM = options.bindToDOM;
+          alert('bind to DOM is set')
       }
 
 
